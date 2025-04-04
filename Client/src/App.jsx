@@ -7,7 +7,7 @@ import AboutUs from './pages/AboutUs/AboutUs';
 import ContactUs from './pages/AboutUs/ContactUs';
 import Navbar from './components/Navbar'
 import PricingPage from './pages/payment/Pricing';
-import InfluencersPage from './pages/influncerPage/Influncercard';
+import InfluencersList from './pages/influncerPage/Influncercard';
 import InfluencerForm from './pages/login/InfluencerForm';
 import InfluencerProfile from './pages/influncerPage/InfluencerProfile';
 import CompanyPage from './pages/AboutUs/CompanyPage';
@@ -26,7 +26,7 @@ function App() {
         <Route path="/AboutUs" element={<AboutUs/>} />
         <Route path="/ContactUs" element={<ContactUs/>} />
         <Route path="/Pricing" element={<PricingPage/>} />
-        <Route path="/InfluencersPage" element={<InfluencersPage/>} />
+        <Route path="/InfluencersPage" element={<InfluencersList/>} />
         <Route path="/InfluencerForm" element={<InfluencerForm/>} />
         <Route path="/InfluencerProfile" element={<InfluencerProfile/>} />
         <Route path="/Companies" element={<CompanyPage/>} />

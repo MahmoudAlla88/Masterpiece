@@ -1,7 +1,19 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize=require("../config/config")
+const InfluencerRegistration = require('./InfluencerRegistration');  // تأكد من استيراد النموذج المناسب
+
 
 const User = sequelize.define('User', {
+  id: {
+    type: DataTypes.BIGINT,  // يمكن استخدام BIGINT إذا كانت القيم كبيرة
+    primaryKey: true,  // تعيينه كـ primary key
+    autoIncrement: true,  // تعيينه ليتم توليده تلقائيًا
+  },
+  google_id: {
+    type: DataTypes.STRING,  // تغيير الـ google_id إلى BIGINT
+    allowNull: true,
+    unique: true,
+  },
   name: {
     type: DataTypes.STRING,
     allowNull: false
@@ -14,7 +26,7 @@ const User = sequelize.define('User', {
   ,
   phone: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   },
   location: {
     type: DataTypes.STRING,
@@ -22,7 +34,7 @@ const User = sequelize.define('User', {
   },
   password: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   },
   image: {
     type: DataTypes.STRING,
@@ -45,6 +57,8 @@ const User = sequelize.define('User', {
   underscored: true,  
 });
 
+User.hasOne(InfluencerRegistration, { foreignKey: 'userId' });
+InfluencerRegistration.belongsTo(User, { foreignKey: 'userId' });
 
 
 module.exports = User;

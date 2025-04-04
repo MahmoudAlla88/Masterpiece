@@ -104,7 +104,8 @@ exports.signup = async (req, res) => {
           adminApproved: user.adminApproved
         },
         token
-      });
+      }
+    );
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: 'Something went wrong while logging in' });

@@ -202,7 +202,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
-
+import Swal from "sweetalert2";
+import axios from "axios";
 const ContactUs = () => {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
 
@@ -210,9 +211,30 @@ const ContactUs = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Submitted", formData);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/api/contact",
+        formData
+      );
+      console.log(formData);
+     
+        Swal.fire({
+          icon: "success",
+          title: "Message Sent!",
+          text: "Your message has been sent successfully.",
+        });
+        setFormData({ name: "", email: "", message: "" }); 
+   
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error.response ? error.response.data.error : "Something went wrong.",
+      });
+    }
   };
 
   return (

@@ -4,6 +4,7 @@ import { User, Mail, Lock, Phone } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from '@react-oauth/google';
 const Login = () => {
   const navigate = useNavigate();
 const [videoHeight, setVideoHeight] = useState(90);
@@ -30,11 +31,29 @@ const toggleRegister = () => {
     setVideoHeight(isRegister ? 90 : 201); 
     
   };
-const handleGoogleSignIn = () => {
-  setLoading(true);
- 
-  setLoading(false);
-};
+  const handleGoogleSignIn = async (response) => {
+    if (response.error) {
+      toast.error("Google Sign-In failed");
+      return;
+    }
+  
+    setLoading(true);
+    try {
+      const { credential } = response;
+      const res = await axios.post(
+        "http://localhost:4000/auth/google",
+        { token: credential },
+        { withCredentials: true } 
+      );
+      toast.success("Logged in successfully!");
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+      toast.error("Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
 const handleRegister = async (e) => {
@@ -49,7 +68,7 @@ const handleRegister = async (e) => {
         email:formData.email,
         password: formData.password,
       },
-      { withCredentials: true } // يضمن إرسال واستقبال الكوكيز
+      { withCredentials: true } 
     );
     toast.success(response.data.message);
     navigate("/");
@@ -77,7 +96,7 @@ const handleLogin = async (e) => {
       { withCredentials: true }
     );
     toast.success(response.data.message);
-    // يمكنك تخزين بيانات المستخدم أو إعادة التوجيه هنا
+  
     navigate("/");
   } catch (error) {
     console.error(error);
@@ -88,6 +107,9 @@ const handleLogin = async (e) => {
     setLoading(false);
   }
 };
+
+
+
 
   return (
     <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
@@ -130,7 +152,7 @@ const handleLogin = async (e) => {
             </div>
 
             {/* Google Sign In Button */}
-            <button
+            {/* <button
               onClick={handleGoogleSignIn}
               className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-300"
             >
@@ -151,8 +173,26 @@ const handleLogin = async (e) => {
                   Or continue with
                 </span>
               </div>
-            </div>
+            </div> */}
+    {/* Google Sign In Button */}
+            <GoogleLogin
 
+              onSuccess={handleGoogleSignIn}
+              onError={() => toast.error("Google login failed")}
+              useOneTap
+                 
+            />
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">
+                  Or continue with
+                </span>
+              </div>
+            </div>
             <form
               onSubmit={isRegister ? handleRegister : handleLogin}
               className="space-y-6"

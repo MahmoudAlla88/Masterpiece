@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('../config/config'); 
-const User = require('../models/User');
+const User = require('./User');
 const InfluencerRegistration = sequelize.define('InfluencerRegistration', {
   // Step 1: Referencing User
   userId: {
