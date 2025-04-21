@@ -62,7 +62,7 @@ const Navbar = () => {
         <div className="flex items-center space-x-2 md:space-x-4">
           <HelpCircle size={20} className="text-gray-600 hidden md:block cursor-pointer hover:text-purple-600" />
           <button onClick={() => { navigate('/login') }} className="hidden md:block border border-gray-300 rounded-md px-4 py-1.5 text-gray-700 hover:bg-gray-100">Log in</button>
-          <button className="bg-purple-500 hover:bg-purple-600 text-white rounded-md px-3 py-1.5 md:px-4"><Link to={"/InfluencerForm"}>Start for free</Link></button>
+          <button className="bg-purple-500 hover:bg-purple-600 text-white rounded-md px-3 py-1.5 md:px-4"><Link to={"/InfluencerForm"}>Join as Influencer</Link></button>
           
           {/* Mobile Menu Button */}
           <button 

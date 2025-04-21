@@ -50,15 +50,20 @@ const User = sequelize.define('User', {
     allowNull: false,
     defaultValue: 'pending'
   }
-}, {
-  timestamps: true,
-  paranoid: true,     
-  tableName: 'User', 
-  underscored: true,  
-});
-
-User.hasOne(InfluencerRegistration, { foreignKey: 'userId' });
-InfluencerRegistration.belongsTo(User, { foreignKey: 'userId' });
-
+}, 
+{
+  timestamps: true,  // يُفعّل تسجيل تاريخ الإنشاء (createdAt) والتحديث (updatedAt) تلقائيًا لكل سجل.
+  paranoid: true,    // يُفعّل الحذف الناعم (soft deletes)؛ بدلاً من حذف السجل نهائيًا، يتم تعيين وقت الحذف في عمود (deletedAt).
+  tableName: 'User', // يُحدد اسم الجدول في قاعدة البيانات كـ 'User' بدلاً من الاسم الافتراضي الذي ينشئه Sequelize.
+  underscored: true, // يستخدم صيغة الـ underscores للفصل بين الكلمات في أسماء الحقول (مثال: created_at بدلاً من createdAt).
+}
+);
 
 module.exports = User;
+// تحدد علاقة one-to-one بأن كل مستخدم (User) يمتلك سجل واحد خاص بتسجيل الإنفلونسر (InfluencerRegistration)
+// يتم الربط عن طريق المفتاح الخارجي 'userId' في جدول InfluencerRegistration.
+// User.hasOne(InfluencerRegistration, { foreignKey: 'userId' });
+
+// // تحدد أن سجل تسجيل الإنفلونسر (InfluencerRegistration) ينتمي إلى مستخدم (User)
+// // وباستخدام المفتاح الخارجي 'userId'، يتم الربط بين السجل في InfluencerRegistration والسجل المناسب في User.
+// InfluencerRegistration.belongsTo(User, { foreignKey: 'userId' });

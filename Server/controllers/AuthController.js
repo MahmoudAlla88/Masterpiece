@@ -27,7 +27,7 @@ module.exports.googleSignIn = async (req, res) => {
         email: payload.email,
         name: payload.name,
         phone: "phone", 
-        password:"password"
+        password:""
       },
     });
 

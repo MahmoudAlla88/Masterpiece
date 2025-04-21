@@ -11,6 +11,8 @@ const UserRoutes=require('./routes/UserRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const sequelize = require('./config/config');
 const influencerRoutes = require('./routes/influencer');
+const InfluencerAdRequest=require("./routes/influncerAdRequest");
+const external=require("./routes/externalApiRoutes")
 dotenv.config();
 const app = express();
 const path = require('path');
@@ -31,10 +33,14 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174', // مثلاً React dev server
+  'https://your-production-site.com'
+];
 
 app.use(cors(
-    {origin:"http://localhost:5173",
+    {origin:allowedOrigins,
     credentials:true}
 ));
 
@@ -49,6 +55,8 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/influencer', influencerRoutes);
 app.use('/auth',authRoutes);
 app.use('/api',contact)
+app.use('/api',InfluencerAdRequest)
+app.use('/api',external)
 // const PORT = process.env.PORT || 5000;
 // app.listen(PORT, () => {
 //   console.log(`Server is running on port ${PORT}`);    

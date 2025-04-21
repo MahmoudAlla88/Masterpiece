@@ -1,4 +1,4 @@
-const { where } = require('sequelize');
+const { Op } = require('sequelize');
 const subscription_plans = require('../models/subscriptionPlan');
 
 // إنشاء اشتراك
@@ -67,6 +67,11 @@ async function updatePlan(req, res) {
     if (!plan) {
       return res.status(404).json({ error: 'Plan not found' });
     }
+
+    if (!title || !price || !monthly_duration || !description || !features) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
     const updatedPlan = await plan.update({
       title,
       price,
@@ -81,37 +86,51 @@ async function updatePlan(req, res) {
   }
 }
 
+
 // حذف ناعم
 async function softDeletePlan(req, res) {
   try {
     const { id } = req.params;
+
+  
+    if (!id) {
+      return res.status(400).json({ error: 'ID is required for soft delete' });
+    }
+
+    // تحقق من وجود الخطة
     const plan = await subscription_plans.findByPk(id);
     if (!plan) {
       return res.status(404).json({ error: 'Plan not found' });
     }
-    await plan.destroy(); // إذا كان `paranoid: true` مفعّلاً، سيقوم `destroy()` بتعيين `deletedAt`
+
+    // إذا كان paranoid: true مفعلاً، سيتم تعيين deletedAt بدلاً من الحذف الفعلي
+    await plan.destroy();
+
     return res.json({ message: 'Plan soft-deleted successfully' });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Failed to delete plan' });
+    console.error("Error soft-deleting plan:", error);
+    return res.status(500).json({ error: 'Failed to delete plan', details: error.message });
   }
 }
 
-// جلب الاشتراكات المحذوفة
+
 async function getDeletedPlans(req, res) {
   try {
+    // تأكد من أنك تستخدم `paranoid: false` للوصول إلى الخطط المحذوفة
     const deletedPlans = await subscription_plans.findAll({
       where: {
-        deletedAt: { [Op.ne]: null }
+        deletedAt: { [Op.ne]: null }  // تأكد من أن `deletedAt` ليس null
       },
-      paranoid: false, // سيتيح لك الوصول إلى السجلات المحذوفة
+      paranoid: false,  // سيتيح لك الوصول إلى السجلات المحذوفة
     });
+
     return res.json(deletedPlans);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Failed to get deleted plans' });
+    console.error("Error fetching deleted plans:", error);
+    return res.status(500).json({ error: 'Failed to get deleted plans', details: error.message });
   }
 }
+
 
 module.exports = {
   createPlan,

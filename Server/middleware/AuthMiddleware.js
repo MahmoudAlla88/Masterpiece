@@ -1,7 +1,7 @@
-// middlewares/authMiddleware.js
+// middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
-
-const authMiddleware = (req, res, next) => {
+const JWT_SECRET = process.env.JWT_SECRET || 'mysecretkey';
+const authMiddleware = async(req, res, next) => {
   try {
     
     const token = req.cookies.token;
@@ -9,9 +9,13 @@ const authMiddleware = (req, res, next) => {
       return res.status(401).json({ message: 'No token provided' });
     }
 
+console.log("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm=",process.env.JWT_SECRET)
+    const decoded = jwt.verify(token, JWT_SECRET);
+    // const user = await User.findByPk(decoded.id);
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mysecretkey');
-    
+    // if (!user) {
+    //   return res.status(404).json({ message: 'User not found' });
+    // }
     req.user = decoded; 
  
     console.log(req.user);
