@@ -1,10 +1,15 @@
-
 import { useState, useEffect } from "react";
 import { User, Mail, Lock, Phone } from "lucide-react";
-import toast, { Toaster } from "react-hot-toast";
+
+import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from '@react-oauth/google';
+import { useDispatch } from "react-redux";
+import { setCurrentUser } from "../../redux/slices/AuthSlices";   // عدّل المسار حسب مشروعك
+
 const Login = () => {
   const navigate = useNavigate();
 const [videoHeight, setVideoHeight] = useState(90);
@@ -16,13 +21,36 @@ const [formData, setFormData] = useState({
   email: '',
   password: '',
 });
-
+const dispatch = useDispatch();
 const handleChange = (e) => {
   const { name, value } = e.target;
   setFormData((prev) => ({
     ...prev,
     [name]: value,
   }));
+};
+const redirectByRole = (role) => {
+  switch (role) {
+    case "admin":
+      navigate("/dashboard");
+      break;
+    case "influencer":
+      navigate("/dashboardInfluncer");
+      break;
+    default:
+      navigate("/");
+  }
+};
+
+
+const loadUser = async () => {
+  const { data: user } = await axios.get(
+    "http://localhost:4000/user/me",
+    { withCredentials: true }
+  );
+  console.log(user.role);
+  dispatch(setCurrentUser(user));
+  redirectByRole(user.role);   
 };
 const toggleRegister = () => {
  
@@ -46,7 +74,8 @@ const toggleRegister = () => {
         { withCredentials: true } 
       );
       toast.success("Logged in successfully!");
-      navigate("/");
+      await loadUser(); 
+      // navigate("/");
     } catch (error) {
       console.error(error);
       toast.error("Login failed");
@@ -71,7 +100,8 @@ const handleRegister = async (e) => {
       { withCredentials: true } 
     );
     toast.success(response.data.message);
-    navigate("/");
+    await loadUser(); 
+    // navigate("/");
     
   } catch (error) {
     console.error(error);
@@ -99,8 +129,8 @@ const handleLogin = async (e) => {
 
 
     toast.success(response.data.message);
-  
-    navigate("/");
+    await loadUser(); 
+    // navigate("/");
   } catch (error) {
     console.error(error);
     toast.error(
@@ -116,7 +146,7 @@ const handleLogin = async (e) => {
 
   return (
     <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
-      <Toaster position="top-right" />
+      <ToastContainer position="top-right" />
       <div className="w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
         {/* Left Side - Video Section */}
         <div className={`hidden md:block md:w-1/2 relative h-${videoHeight}`}>

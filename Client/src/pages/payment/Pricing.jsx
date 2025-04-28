@@ -120,7 +120,7 @@ const PricingPage = () => {
   }
 
   return (
-    <section className="py-16 px-6 bg-gradient-to-br from-blue-50 to-purple-100 text-center">
+    <section className="py-16 px-6 bg-white text-center">
       <motion.h2
         className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-[#D63384] bg-clip-text text-transparent mb-10"
         initial={{ opacity: 0, y: -50 }}
@@ -129,7 +129,7 @@ const PricingPage = () => {
       >
         Choose Your Plan
       </motion.h2>
-      <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-12">
+      <p className="text-gray-600 text-lg max-w-4xl mx-auto mb-12">
         Flexible pricing plans designed to meet your business needs.
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -142,24 +142,34 @@ const PricingPage = () => {
             transition={{ duration: 0.5, delay: index * 0.2 }}
           >
                 
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#D63384] to-[#6F42C1]"></div>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-4">{plan.title}</h3>
-            <p className="text-3xl font-bold text-[#D63384] mb-4">{plan.price}JD/{plan.monthly_duration}monthly</p>
-            <p className="space-y-2 mb-6 text-gray-600 mb-4">{plan.description}</p>
-            <ul className="text-gray-600 space-y-2 mb-6">
-              {plan.features.map((feature, idx) => (
-                <li key={idx} className="flex items-center justify-center gap-2">
-                  ✅ {feature}
-                </li>
-              ))}
-            </ul>
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-600 to-pink-600"></div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4 text-left">{plan.title}</h3>
+            <div className="mb-4 text-left">
+        <span className="text-purple-600 text-4xl font-bold">{plan.price}</span>
+        <span className="text-gray-500 ml-1 ">JD /{plan.monthly_duration} months</span>
+      </div>
+            <p className="space-y-2 mb-6 text-gray-600 mb-4 text-left">{plan.description}</p>
+            <h4 className="text-lg font-semibold text-gray-800 mb-3 text-left">Features</h4>
+
+            <ul className="space-y-3 mb-6">
+          {plan.features.map((feature, idx) => (
+            <li key={idx} className="flex items-center">
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-purple-100 text-purple-600 mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span className="text-gray-700">{feature}</span>
+            </li>
+          ))}
+        </ul>
             <motion.button
-              className="w-full py-3 rounded-lg text-white font-semibold bg-gradient-to-r from-[#D63384] to-[#6F42C1] hover:brightness-110 transition"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              Get Started
-            </motion.button>
+        className="w-full py-4 rounded-lg text-white font-semibold bg-gradient-to-r from-purple-600 to-pink-500 hover:brightness-110 transition"
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        Get Started
+      </motion.button>
           </motion.div>
         ))}
       </div>

@@ -1,58 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 const InfluencerProfile = () => {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
-  const { id } = useParams(); // Get the ID from URL at the top level
+  const { id } = useParams(); 
   const navigate = useNavigate();
-  // useEffect(() => {
-  //   const fetchInfluencer = async () => {
-  //     try {
-  //       const res = await axios.get(`http://localhost:4000/api/influencer/get/${id}`);
-  //       const data = await res.json();
-  //       console.log("🔥 Data from backend:", data);
-  //       setProfileData(data);
-  //       // console.log(res.data);
-  //     } catch (err) {
-  //       console.error("Error fetching influencer data:", err);
-  //     }
-  //   };
-  //   console.log("🔥 Data from backend:", data);
-  //   fetchInfluencer();
-  // }, [id]);
-  // useEffect(() => {
-  //   const { id } = useParams();
-  //   axios.get(`http://localhost:5000/api/influencer/${id}`,{ withCredentials: true })
-  //     .then((res) => {
-  //       setInfluencer(res.data);
-  //     })
-  //     .catch((err) => {
-  //       console.error('Error fetching influencer:', err);
-  //     });
-  // }, [id]);
-  // useEffect(() => {
-  //   // جلب الـ ID من الURL
-
-  //   const fetchData = async () => {
-  //     const params = useParams();
-  //     console.log("ali");
-  //     try {
-  //       const response = await axios.get(
-  //         `http://localhost:4000/api/influencer/get/${id}`
-  //       );
-
-  //       console.log(response.data); // تأكد من أن الرد وصل تمامًا
-
-  //       setProfileData(response.data); // حفظ البيانات في الـ state
-  //     } catch (error) {
-  //       console.error("Error fetching influencer:", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
+  const currentUser = useSelector((state) => state.user.currentUser);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -72,13 +29,50 @@ const InfluencerProfile = () => {
 
 
   const handleAdRequest = () => {
+    if(currentUser!=null){
     console.log("nn?",profileData.advertisingcost)
-    navigate(`/ad-request/${profileData.userId}`, {
+    navigate(`/adbooking-request/${profileData.userId}`, {
       state: {
         influencerPrice: profileData.advertisingcost, // أو أي اسم عندك للسعر
       },
     }
-    );
+    );}
+    else {
+      toast(
+        ({ closeToast }) => (
+          <div>
+            <p className="font-semibold mb-2">
+              You need to log in before continuing
+            </p>
+  
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  closeToast();          // close the toast
+                  navigate("/login");    // go to login page
+                }}
+                className="rounded bg-purple-500 px-3 py-1 text-white"
+              >
+                Log In
+              </button>
+  
+              <button
+                onClick={closeToast}
+                className="rounded border px-3 py-1"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ),
+        {
+          autoClose: false,     // keep toast open until user chooses
+          closeOnClick: false,
+          position: "top-center",
+          theme: "colored",
+        }
+      );
+    }
   };
 
   // Social media icons (simple version)

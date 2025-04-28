@@ -1,0 +1,160 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+
+const UserBookings = () => {
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const user = useSelector((state) => state.user.currentUser);  // بيانات المستخدم الحالي من Redux
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
+  const handleOpenPaymentModal = (bookingId) => {
+    setSelectedBooking(bookingId);
+    setIsPaymentModalOpen(true);
+  };
+
+  const handleClosePaymentModal = () => {
+    setIsPaymentModalOpen(false);
+    setSelectedBooking(null);
+  };
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await axios.get(`http://localhost:4000/api/users/bookings/${user.id}`);
+        console.log(response);
+        setBookings(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching bookings:', error);
+        setLoading(false);
+      }
+    };
+
+    if (user?.id) {
+      fetchBookings();
+    }
+  }, [user]);
+
+  const handlePayment = async (bookingId) => {
+    try {
+      const response = await axios.post(`http://localhost:4000/api/users/pay/${bookingId}`);
+      if (response.data.success) {
+        alert("Payment successful!");
+        // يمكنك تحديث الحالة بعد الدفع هنا
+        setBookings((prevBookings) =>
+          prevBookings.map((booking) =>
+            booking.id === bookingId ? { ...booking, status: 'paid' } : booking
+          )
+        );
+      } else {
+        alert("Payment failed!");
+      }
+    } catch (error) {
+      console.error("Payment failed:", error);
+    }
+  };
+
+  return (
+    <div className="p-6">
+      <h2 className="text-3xl font-bold mb-6">My Bookings</h2>
+      {loading ? (
+        <div>Loading...</div>
+      ) : bookings.length === 0 ? (
+        <p>No bookings found.</p>
+      ) : (
+        <div>
+          {bookings.map((booking) => (
+            <div key={booking.id} className="mb-4 p-4 border border-gray-200 rounded-lg">
+              <h3 className="text-xl">{booking.campaignTitle}</h3>
+              <p>Status: {booking.status}</p>
+              <p>Proposed Price: {booking.proposedPrice} JD</p>
+              {booking.status === 'accepted'  ? (
+              <div>    <button
+                  onClick={() => handleOpenPaymentModal(booking.id)}
+                  className="mt-2 p-2 bg-green-500 text-white rounded"
+                >
+                  Pay Now
+                </button>
+                  
+      {isPaymentModalOpen && (
+        <PaymentModal
+          bookingId={selectedBooking}
+          onClose={handleClosePaymentModal}
+        />
+      )}   </div>
+              ) : (
+                <p>Payment not available for this booking.</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+const PaymentModal = ({ bookingId, onClose }) => {
+    const [paymentMethod, setPaymentMethod] = useState('');
+    const [paymentStatus, setPaymentStatus] = useState('');
+  
+    const handlePayment = async () => {
+      try {
+        if (!paymentMethod) {
+          alert("Please select a payment method");
+          return;
+        }
+  
+        // إرسال طلب دفع مع طريقة الدفع المحددة
+        const response = await axios.post(`http://localhost:4000/api/users/pay/${bookingId}`, { paymentMethod });
+  
+        // حالما يتم الدفع بنجاح، تحديث الحالة إلى "paid"
+        if (response.status === 200) {
+          setPaymentStatus('Payment successful');
+          setTimeout(() => onClose(), 2000);  // إغلاق الـ modal بعد نجاح الدفع
+        }
+      } catch (error) {
+        console.error('Error processing payment:', error);
+        setPaymentStatus('Payment failed. Please try again');
+      }
+    };
+  
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-lg shadow-md w-96">
+          <h3 className="text-xl font-bold mb-4">Select Payment Method</h3>
+          
+          {/* نموذج اختيار طريقة الدفع */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700">Choose your payment method:</label>
+            <select
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md"
+            >
+              <option value="">Select Payment Method</option>
+              <option value="paypal">PayPal</option>
+              <option value="visa">Visa</option>
+              <option value="stripe">Stripe</option>
+              {/* يمكنك إضافة خيارات أخرى هنا */}
+            </select>
+          </div>
+  
+          {/* عرض حالة الدفع */}
+          {paymentStatus && <div className="text-center text-sm text-gray-500 mt-4">{paymentStatus}</div>}
+  
+          {/* زر الدفع */}
+          <div className="flex justify-between gap-2 mt-4">
+            <button onClick={handlePayment} className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md">
+              Pay Now
+            </button>
+            <button onClick={onClose} className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+export default UserBookings;

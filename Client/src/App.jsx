@@ -21,6 +21,10 @@ import { useDispatch } from 'react-redux';
 import AppLayout from './dashboardAdmin/AppLayout';
 import AdRequestPage from './pages/influncerPage/AdRequestPage';
 import AppLayoutInfluncer from './dashboardInfluncer/AppLayout';
+import ProfilePage from './pages/profile/profile';
+
+import AdRequestBooking from './pages/influncerPage/AdRequestBooking';
+import UserBookings from './pages/profile/UserBookings';
 function App() {
   const location = useLocation();
 
@@ -48,15 +52,19 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home/>} />
+        <Route path="/profile" element={<ProfilePage/>} />
         <Route path="/AboutUs" element={<AboutUs/>} />
         <Route path="/ContactUs" element={<ContactUs/>} />
         <Route path="/Pricing" element={<PricingPage/>} />
         <Route path="/InfluencersPage" element={<InfluencersList/>} />
         <Route path="/InfluencerForm" element={<InfluencerRegistrationForm />} />
         <Route path="/InfluencerProfile/:id" element={<InfluencerProfile/>} />
+        <Route path="/userbookings" element={<UserBookings/>} />
         <Route path="/Companies" element={<CompanyPage/>} />
         <Route path="/dashboard/*" element={< AppLayout/>} />
         <Route path="/ad-request/:id" element={<AdRequestPage />} />
+        <Route path="/adbooking-request/:id" element={<AdRequestBooking />} />
+        
         <Route path="/dashboardInfluncer/*" element={<AppLayoutInfluncer  />} />
       </Routes>
       {location.pathname !== "/login" && !location.pathname.startsWith("/dashboard") && <Footer />}

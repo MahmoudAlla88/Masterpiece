@@ -382,7 +382,8 @@ const SubscriptionCardForm = () => {
   }
 
   return (
-    <section className="py-16 px-6 bg-gradient-to-br from-pink-50 to-purple-100 min-h-screen">
+    // bg-gradient-to-br from-pink-50 to-purple-100
+    <section className="py-16 px-6 bg-gray-50  min-h-screen">
       <motion.div
         className="max-w-7xl mx-auto"
         initial={{ opacity: 0 }}

@@ -347,8 +347,8 @@ const AdminSidebar = () => {
   const menuItems = [
     { id: '', icon: <Home size={20} />, label: 'Dashboard' },
     { id: 'influencers', icon: <Users size={20} />, label: 'Influencers' },
-    { id: 'campaigns', icon: <Briefcase size={20} />, label: 'Campaigns' },
-    { id: 'calendar', icon: <Calendar size={20} />, label: 'Schedule' },
+    { id: 'user', icon: <Briefcase size={20} />, label: 'user' },
+    { id: 'AdBookings', icon: <Calendar size={20} />, label: 'AdBookings' },
     { id: 'analytics', icon: <BarChart size={20} />, label: 'Analytics' },
     { id: 'messages', icon: <MessageCircle size={20} />, label: 'Messages' },
     { id: 'Subscription', icon: <Image size={20} />, label: 'Subscription' },

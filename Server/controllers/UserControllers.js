@@ -111,3 +111,22 @@ exports.signup = async (req, res) => {
       return res.status(500).json({ message: 'Something went wrong while logging in' });
   }
   };
+
+  exports.getAllUsers = async (req, res) => {
+    try {
+      const users = await User.findAll({
+        attributes: ['id', 'name', 'email', 'phone', 'location', 'image', 'role'], // تحديد الحقول المراد استرجاعها
+     
+      });
+      res.status(200).json({
+        success: true,
+        users: users
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        success: false,
+        message: 'حدث خطأ أثناء جلب المستخدمين'
+      });
+    }
+  };

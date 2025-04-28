@@ -33,7 +33,7 @@ module.exports.googleSignIn = async (req, res) => {
 
     // توليد الـ JWT
     const jwtToken = jwt.sign(
-      { id: user.id, email: user.email },
+      { userId: user.id, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
