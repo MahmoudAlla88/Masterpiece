@@ -41,7 +41,8 @@ function App() {
       } catch (err) {
         console.log("User not logged in", err);
       }
-    };
+    }
+    ;
 
     fetchUser();
   }, []);

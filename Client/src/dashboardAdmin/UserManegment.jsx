@@ -7,6 +7,8 @@ const UsersManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [viewType, setViewType] = useState('table');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [actionLoading, setActionLoading] = useState(null); 
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -25,6 +27,45 @@ const UsersManagement = () => {
     
     fetchUsers();
   }, []);
+  const updateUserRole = async (userId, newRole) => {
+    // optimistic UI: change immediately, rollback on error
+    const previous = users;
+    setUsers((u) =>
+      u.map((user) => (user.id === userId ? { ...user, role: newRole } : user))
+    );
+    setActionLoading(userId);
+
+    try {
+      await axios.patch(`http://localhost:4000/user/${userId}/role`, {
+        role: newRole,
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update role – please check your API connection");
+      setUsers(previous); // rollback
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const deleteUser = async (userId) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+
+    const previous = users;
+    setUsers((u) => u.filter((user) => user.id !== userId));
+    setActionLoading(userId);
+
+    try {
+      await axios.delete(`http://localhost:4000/user/${userId}`);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete user – please check your API connection");
+      setUsers(previous); // rollback
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
 
   // Apply filters
   const filteredUsers = users.filter(user => {
@@ -93,8 +134,7 @@ const UsersManagement = () => {
               <select
                 className="appearance-none bg-white border border-gray-200 rounded-lg pl-3 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-transparent cursor-pointer w-full"
                 value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
-              >
+                onChange={(e) => setRoleFilter(e.target.value)} >
                 <option value="all">All Roles</option>
                 <option value="user">User</option>
                 <option value="influencer">Influencer</option>
@@ -121,7 +161,7 @@ const UsersManagement = () => {
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th> */}
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
@@ -131,9 +171,32 @@ const UsersManagement = () => {
                     <tr key={user.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10">
-                            <img className="h-10 w-10 rounded-full" src={user.image} alt={user.name} />
-                          </div>
+                        <div className="flex-shrink-0 h-10 w-10">
+  {user.image ? (
+    <img
+      src={`http://localhost:4000${user.image}`}
+      alt={user.name}
+      className="h-10 w-10 rounded-full object-cover"
+      onError={(e) => {
+        e.currentTarget.onerror = null;      // امنع حلقة onError
+        e.currentTarget.src = '/icons/user.svg'; // مسار أيقونة احتياطية محلية
+      }}
+    />
+  ) : (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-10 w-10 rounded-full text-gray-400 bg-gray-200 p-2"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fillRule="evenodd"
+        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+        clipRule="evenodd"
+      />
+    </svg>
+  )}
+</div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">{user.name}</div>
                             <div className="text-sm text-gray-500">{user.location}</div>
@@ -151,23 +214,24 @@ const UsersManagement = () => {
 {user.role === 'influencer' ? 'Influencer' : user.role === 'admin' ? 'Admin' : 'User'}
 </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      {/* <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                           user.adminApproved === 'approved' ? 'bg-green-100 text-green-800' :
                           user.adminApproved === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
                         }`}>
                           {user.adminApproved}
                         </span>
-                      </td>
+                      </td> */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
-                          <button className="p-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors">
+                          {/* <button className="p-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors">
                             <Eye size={16} />
-                          </button>
-                          <button className="p-1 bg-green-50 text-green-600 rounded hover:bg-green-100 transition-colors">
+                          </button> */}
+                          {/* <button className="p-1 bg-green-50 text-green-600 rounded hover:bg-green-100 transition-colors">
                             <CheckCircle size={16} />
-                          </button>
-                          <button className="p-1 bg-red-50 text-red-600 rounded hover:bg-red-100 transition-colors">
+                          </button> */}
+                          <button  disabled={actionLoading === user.id}
+                      onClick={() => deleteUser(user.id)} className="p-1 bg-red-50 text-red-600 rounded hover:bg-red-100 transition-colors">
                             <XCircle size={16} />
                           </button>
                         </div>
@@ -284,3 +348,4 @@ const UsersManagement = () => {
 };
 
 export default UsersManagement;
+

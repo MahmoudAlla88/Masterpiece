@@ -560,7 +560,7 @@ exports.updateInfluencerStatus = async (req, res) => {
   try {
     const { influencerId } = req.params;
     const { status } = req.body; // status could be 'approved' or 'rejected'
-console.log(status);
+console.log("vv",status);
 console.log(influencerId);
     // تحقق من أن الحالة إما 'approved' أو 'rejected'
     if (status !== 'approved' && status !== 'rejected') {
@@ -572,7 +572,7 @@ console.log(influencerId);
       where: { id: influencerId },
       include: [{ model: User }] // مهم: لازم تكون العلاقة معرفة
     });
-
+console.log(influencer)
     if (!influencer) {
       return res.status(404).json({ message: 'Influencer not found' });
     }

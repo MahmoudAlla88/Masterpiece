@@ -721,14 +721,18 @@ export default function InfluencerRegistrationForm() {
         <CheckCircle className="w-16 h-16 text-green-500" />
       </div>
       <h2 className="text-2xl font-bold text-gray-800 mb-2">Registration Successful!</h2>
-      <p className="text-gray-600 mb-6">Your influencer profile has been submitted successfully.</p>
+      {/* <p className="text-gray-600 mb-6">Your influencer profile has been submitted successfully.</p> */}
+      <p className="text-gray-600 mb-6">
+        Your influencer profile has been received and is <strong>pending admin approval</strong>. 
+        You’ll gain access to the dashboard as soon as it’s approved.
+      </p>
       <div className="flex justify-center">
         <button
           type="button"
           className="px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
-          onClick={() => window.location.href = '/dashboard'}
+          onClick={() => window.location.href = '/Pricing'}
         >
-          Go to Dashboard
+          Go to Pricing
         </button>
       </div>
     </div>

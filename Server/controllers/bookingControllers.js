@@ -32,20 +32,6 @@ console.log("req=",req.body);
   }
 };
 
-// exports.getAllAdRequests = async (req, res) => {
-//     try {
-//       const adRequests = await InfluencerBooking.findAll({
-//         include: [
-//           { model: User, attributes: ['id', 'name', 'email'] }, // تضمين بيانات المستخدم
-//           { model: InfluencerRegistration, attributes: ['id', 'bio', 'profileImage'] }, // تضمين بيانات المؤثر
-//         ],
-//       });
-//       return res.status(200).json(adRequests);
-//     } catch (error) {
-//       console.error(error);
-//       return res.status(500).json({ message: 'حدث خطأ أثناء جلب الطلبات' });
-//     }
-//   };
 exports.getAllAdRequests = async (req, res) => {
   const { status, page = 1, limit = 10 } = req.query;
   console.log('Fetching bookings for:', { status, page, limit });

@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize=require("../config/config")
-const InfluencerRegistration = require('./InfluencerRegistration');  // تأكد من استيراد النموذج المناسب
+const InfluencerRegistration = require('./InfluencerRegistration');  
 
 
 const User = sequelize.define('User', {
@@ -49,8 +49,16 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false,
     defaultValue: 'pending'
-  }
-}, 
+  },
+  subscriptionplan: { 
+    type: DataTypes.STRING,
+    allowNull: true 
+  },
+  subscriptionexpiry: { 
+  type: DataTypes.STRING,
+  allowNull: true },
+}
+, 
 {
   timestamps: true,  // يُفعّل تسجيل تاريخ الإنشاء (createdAt) والتحديث (updatedAt) تلقائيًا لكل سجل.
   paranoid: true,    // يُفعّل الحذف الناعم (soft deletes)؛ بدلاً من حذف السجل نهائيًا، يتم تعيين وقت الحذف في عمود (deletedAt).
@@ -67,3 +75,4 @@ module.exports = User;
 // // تحدد أن سجل تسجيل الإنفلونسر (InfluencerRegistration) ينتمي إلى مستخدم (User)
 // // وباستخدام المفتاح الخارجي 'userId'، يتم الربط بين السجل في InfluencerRegistration والسجل المناسب في User.
 // InfluencerRegistration.belongsTo(User, { foreignKey: 'userId' });
+

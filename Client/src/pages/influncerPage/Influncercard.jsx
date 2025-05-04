@@ -8,6 +8,8 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+
+
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 export default function InfluencerListPage() {
@@ -136,14 +138,21 @@ console.log(receivedInfluencers)
       );
     }
 
-    if (selectedCategories.length > 0) {
-      results = results.filter((influencer) =>
-        influencer.contentCategories.some((category) =>
-          selectedCategories.includes(category)
-        )
-      );
-    }
-
+    // if (selectedCategories.length > 0) {
+    //   results = results.filter((influencer) =>
+    //     influencer.contentCategories.some((category) =>
+    //       selectedCategories.includes(category)
+    //     )
+    //   );
+    // }
+if (selectedCategories.length > 0) {
+  results = results.filter((influencer) =>
+    // يجب أن تتحقّق كل فئة مختارة داخل فئات المؤثّر
+    selectedCategories.every((cat) =>
+      influencer.contentCategories.includes(cat)
+    )
+  );
+}
     setFilteredInfluencers(results);
   }, [searchTerm, selectedCategories, influencers]);
 

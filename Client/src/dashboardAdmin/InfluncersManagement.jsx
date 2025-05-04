@@ -349,6 +349,7 @@ const InfluencersManagement = () => {
 
         const response = await axios.get(`http://localhost:4000/api/influencer/getAllInfluencers?${params.toString()}`);
         setInfluencers(response.data.influencers);
+        
         setLoading(false);
       } catch (error) {
         console.error("Error fetching influencers:", error);
@@ -360,6 +361,7 @@ const InfluencersManagement = () => {
   }, [searchQuery, statusFilter]);
 
   const handleApprove = async (id) => {
+
     try {
       const response = await axios.put(`http://localhost:4000/api/influencer/${id}/status`, {
         status: 'approved',
@@ -637,13 +639,13 @@ return (
                         {influencer.user.adminApproved === 'pending' && (
                           <>
                             <button 
-                              onClick={() => handleReject(influencer.user.id)}
+                              onClick={() => handleReject(influencer.influencerRegistration.id)}
                               className="px-3 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100 transition-colors"
                             >
                               <XCircle size={16} />
                             </button>
                             <button 
-                              onClick={() => handleApprove(influencer.user.id)}
+                              onClick={() => handleApprove(influencer.influencerRegistration.id)}
                               className="px-3 py-1 bg-green-50 text-green-600 rounded hover:bg-green-100 transition-colors"
                             >
                               <CheckCircle size={16} />
