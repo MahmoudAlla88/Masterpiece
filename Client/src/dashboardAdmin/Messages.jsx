@@ -499,7 +499,7 @@
 // export default Messages;
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import {  toast } from 'react-toastify'; 
 const Messages = () => {
   const [messages, setMessages] = useState([]);
   const [filter, setFilter] = useState('');
@@ -567,7 +567,7 @@ const Messages = () => {
       setSelectedMessage(null);
       
       // Show success notification
-      alert("Reply sent successfully!");
+      toast.success("Reply sent successfully!");
     } catch (error) {
       console.error("Error sending reply:", error);
       setError("Failed to send reply.");

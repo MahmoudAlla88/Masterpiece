@@ -6,10 +6,11 @@ const {
   createMessage,
   getMessages,
   getMessagesByReadStatus,
-  updateMessageReadStatus
+  updateMessageReadStatus,
+  replyToMessage,
 } = require("../controllers/MessageControllers");
 
-
+router.post('/contact/reply/:messageId', replyToMessage);
 router.post("/contact", createMessage);
 router.get("/contact/getmessages", getMessages);
 router.get("/contact/getMessagesByReadStatus",  getMessagesByReadStatus);

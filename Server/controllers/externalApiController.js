@@ -10,7 +10,7 @@ exports.sendInfluencersAndBrand = async (req, res) => {
     const { brandName, brandDescription, minAdPrice, maxAdPrice } = req.body;
     console.log(req.body);
 
-    // إنشاء البراند
+  
     const brand = await Brand.create({
       brandName,
       brandDescription,
@@ -24,6 +24,10 @@ exports.sendInfluencersAndBrand = async (req, res) => {
     const influencers = await Influencer.findAll({
       include: {
         model: User,
+         where: {
+      adminApproved: 'approved'
+    },
+     required: true, 
         attributes: ['id', 'name', 'email', 'location'],
       },
       attributes: {
@@ -53,6 +57,7 @@ exports.sendInfluencersAndBrand = async (req, res) => {
         contentCategories: inf.contentCategories,
         audienceDemo: inf.audienceDemo,
         advertisingcost: inf.advertisingcost,
+        profileImage:inf.profileImage
       }))
     };
 
@@ -65,7 +70,7 @@ exports.sendInfluencersAndBrand = async (req, res) => {
 
     const { top_influencers, rankings } = response.data;
 
-    // فلترة المؤثرين بناءً على الـ IDs المختارة
+   
     const selectedInfluencers = influencers.filter((inf) =>
       top_influencers.includes(Number(inf.id))
     );
@@ -83,8 +88,8 @@ exports.sendInfluencersAndBrand = async (req, res) => {
           contentCategories: influencer.contentCategories,
           audienceDemo: influencer.audienceDemo,
           advertisingcost: influencer.advertisingcost,
-          rankingExplanation: rankings[String(index + 1)] || null, // ربط التفسير بالمؤثر حسب ترتيبه
-
+          rankingExplanation: rankings[String(index + 1)] || null, 
+          profileImage:influencer.profileImage
         }))
       });
     } else {

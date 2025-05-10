@@ -25,6 +25,7 @@ import ProfilePage from './pages/profile/profile';
 
 import AdRequestBooking from './pages/influncerPage/AdRequestBooking';
 import UserBookings from './pages/profile/UserBookings';
+import PaymentPage from './pages/payment/Payment';
 function App() {
   const location = useLocation();
 
@@ -65,7 +66,7 @@ function App() {
         <Route path="/dashboard/*" element={< AppLayout/>} />
         <Route path="/ad-request/:id" element={<AdRequestPage />} />
         <Route path="/adbooking-request/:id" element={<AdRequestBooking />} />
-        
+        <Route path="/payment" element={<PaymentPage />} />
         <Route path="/dashboardInfluncer/*" element={<AppLayoutInfluncer  />} />
       </Routes>
       {location.pathname !== "/login" && !location.pathname.startsWith("/dashboard") && <Footer />}

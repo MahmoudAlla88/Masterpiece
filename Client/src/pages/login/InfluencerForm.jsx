@@ -543,7 +543,7 @@ export default function InfluencerRegistrationForm() {
               type="number"
               id="AdvertisingCost"
               name="AdvertisingCost"
-              value={formData.AdvertisingCost}
+              value={formData.AdvertisingCost }
               onChange={handleInputChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="300 JD"

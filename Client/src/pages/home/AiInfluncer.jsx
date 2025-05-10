@@ -83,9 +83,35 @@
 // export default AiInfluencer;
 
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const AiInfluencer = () => {
+ 
+ 
+const AiInfluencer = () => {  
+  const [topInfluencers, setTopInfluencers] = useState([]);
+
+  useEffect(() => {
+    // جلب أعلى 3 مؤثرين باستخدام axios
+    axios
+      .get('http://localhost:4000/api/users/top', { params: { limit: 3 } })
+      .then(({ data }) => {
+        console.log('fetched top influencers:', data);
+        setTopInfluencers(data);
+      })
+      .catch(err => {
+        console.error('error fetching top influencers:', err);
+      });
+  }, []);
+
+  // لمراقبة المتغيّر بعد التحديث
+  useEffect(() => {
+    console.log('topInfluencers state updated:', topInfluencers);
+  }, [topInfluencers]);
+ const maxCount =
+    topInfluencers.reduce((max, inf) => (inf.bookingCount > max ? inf.bookingCount : max), 0) || 1;
+
+
   return (
     <div className="bg-purple-50 min-h-screen p-8 flex justify-center items-center">
       <div className="w-full max-w-6xl flex flex-col md:flex-row gap-8">
@@ -116,6 +142,7 @@ const AiInfluencer = () => {
               Find Your Perfect Match
               <span className="ml-2">→</span>
             </button>
+          
             <button className="border border-gray-300 text-gray-700 px-6 py-3 rounded-full">
               How It Works
             </button>
@@ -180,30 +207,36 @@ const AiInfluencer = () => {
               </div>
               
               <div className="space-y-4">
-                {[
-                  { id: 1, match: '85%' },
-                  { id: 2, match: '80%' },
-                  { id: 3, match: '75%' }
-                ].map((influencer) => (
-                  <div key={influencer.id} className="flex items-center">
-                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-                      <span className="text-purple-500 text-xs">{influencer.id}</span>
-                    </div>
-                    <div className="flex-1">
-                      <span className="text-sm">Influencer {influencer.id}</span>
-                      <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                        <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full" style={{width: influencer.match}}></div>
+               {topInfluencers.map((inf, idx) => {
+                  const pct = Math.round((inf.bookingCount / maxCount) * 100);
+                  return (
+                    <div key={inf.influencerId} className="flex items-center">
+                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-purple-500 text-xs">{idx + 1}</span>
                       </div>
+                      <div className="flex-1">
+                        <span className="text-sm">{inf.user.name}</span>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                          <div
+                            className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
+                      <span className="text-green-500 text-xs ml-3">{pct}% match</span>
                     </div>
-                    <span className="text-green-500 text-xs ml-3">{influencer.match} match</span>
-                  </div>
-                ))}
+                  );
+                })}
+                {topInfluencers.length === 0 && (
+                  <p className="text-gray-500 text-sm">لا توجد بيانات لعرضها حالياً.</p>
+                )}
+              </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    // </div>
   );
 };
 

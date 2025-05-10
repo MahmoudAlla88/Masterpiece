@@ -97,6 +97,7 @@ console.log(receivedInfluencers)
           profileImage:
             influencer.InfluencerRegistration.profileImage ||
             "/default-profile.png",
+            advertisingcost:influencer.InfluencerRegistration.advertisingcost*(1 + 0.1),
           location: influencer.location || "Location not specified",
           bio: influencer.InfluencerRegistration.bio || "No bio available",
           contentCategories:
@@ -114,6 +115,7 @@ console.log(receivedInfluencers)
         }));
         console.log(response.data.influencers);
         setInfluencers(transformedData);
+       
       } catch (err) {
         setError("Failed to load influencers. Please try again later.");
         console.error("Error fetching influencers:", err);
@@ -154,6 +156,7 @@ if (selectedCategories.length > 0) {
   );
 }
     setFilteredInfluencers(results);
+    console.log("vv",filteredInfluencers)
   }, [searchTerm, selectedCategories, influencers]);
 
   const handleSearchChange = (e) => {
@@ -547,18 +550,45 @@ if (selectedCategories.length > 0) {
                         className="h-full w-full object-cover"
                       />
                     </div>
+                    
                   </div>
                 </div>
 
                 <div className="pt-14 px-6 pb-6">
                   {/* Name and Location */}
-                  <div className="mb-4">
+                  {/* <div className="flex mb-4">
+
                     <h3 className="text-xl font-bold text-gray-800">
                       {influencer.name}
                     </h3>
                     <p className="text-gray-600">{influencer.location}</p>
-                  </div>
+                  
+                
+                   <div className="text-sm text-gray-500">advertisingcost</div>
+                   <div className="text-lg font-bold text-gray-800">
+                        {influencer.advertisingcost}JD
+                      </div>
+                      {/* <div className="text-xs text-green-600">   Per ad</div> */}
+                 {/* </div> */} 
+                 <div className="flex justify-between items-center mb-4">
+  {/* جهة اليسار: تكلفة الإعلان */}
+  <div className="flex flex-col">
+    <div className="text-lg font-bold text-gray-800"> {influencer.name}</div>
+    <div className="text-sm text-gray-500">
+    {influencer.location}
+    </div>
+  </div>
 
+  {/* جهة اليمين: الاسم والموقع */}
+  <div className="flex flex-col items-end">
+    <h3 className="text-gray-600">
+    Advertising cost
+    </h3>
+    <p className="text-xl font-bold text-gray-800">
+       {influencer.advertisingcost}JD
+    </p>
+  </div>
+</div>
                   {/* Categories */}
                   <div className="mb-4 flex flex-wrap gap-2">
                     {influencer.contentCategories.map((category, idx) => (
@@ -594,7 +624,7 @@ if (selectedCategories.length > 0) {
                         {influencer.stats.engagementRate} engagement
                       </div>
                     </div>
-
+                  
                     <div className="flex gap-2">
                       {influencer.socialLinks.map((link, idx) => (
                         <a

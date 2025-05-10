@@ -33,7 +33,8 @@ const InfluencerProfile = () => {
     console.log("nn?",profileData.advertisingcost)
     navigate(`/adbooking-request/${profileData.userId}`, {
       state: {
-        influencerPrice: profileData.advertisingcost, // أو أي اسم عندك للسعر
+        influencerPrice: profileData.advertisingcost*(1.1), // أو أي اسم عندك للسعر
+        influncerName:profileData.User.name
       },
     }
     );}
@@ -164,12 +165,14 @@ const InfluencerProfile = () => {
             </p>
           </div>
           <div className="mt-4 md:mt-0">
+          {/* <span className="relative font-bold text-gray-900 right-2"> { profileData.advertisingcost*(1.1)}JD</span> */}
             <button className="bg-purple-500 text-white px-4 py-2 rounded-lg font-medium mr-2 hover:bg-purple-600 transition"
                onClick={handleAdRequest}
             >
-            Request Ad
+      { profileData?.advertisingcost*(1.1)}JD      Request Ad
 
             </button>
+         
             {/* <button className="bg-pink-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-pink-700 transition">
               Hire for Campaign
             </button> */}

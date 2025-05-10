@@ -8,6 +8,7 @@ const {
   updatePlan,
   softDeletePlan,
   getDeletedPlans,
+  restorePlan
 } = require('../controllers/subscriptionController');
 
 
@@ -19,7 +20,7 @@ router.get('/:id', getPlanById);
 
 
 router.put('/:id', updatePlan);
-
+router.put('/restore/:planId', restorePlan);
 // حذف ناعم
 router.delete('/:id', softDeletePlan);
 

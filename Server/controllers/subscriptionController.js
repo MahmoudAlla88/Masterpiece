@@ -131,7 +131,29 @@ async function getDeletedPlans(req, res) {
   }
 }
 
+const restorePlan = async (req, res) => {
+  const { planId } = req.params;
+  if (!planId) {
+    return res.status(400).json({ error: 'Plan ID is required to restore a plan' });
+  }
 
+  try {
+    const plan = await subscription_plans.findByPk(planId, { paranoid: false });
+    if (!plan) {
+      return res.status(404).json({ error: 'Plan not found' });
+    }
+
+   
+    await plan.restore(); 
+    // plan.deletedAt = null;
+
+    const restoredPlan = await subscription_plans.findByPk(planId);
+    return res.json(restoredPlan);
+  } catch (err) {
+    console.error('Error in restorePlan:', err);
+    return res.status(500).json({ error: 'Failed to restore plan.' });
+  }
+};
 module.exports = {
   createPlan,
   getPlans,
@@ -139,4 +161,5 @@ module.exports = {
   updatePlan,
   softDeletePlan,
   getDeletedPlans,
+  restorePlan
 };

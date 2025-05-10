@@ -3,7 +3,7 @@ const router = express.Router();
 const upload = require("../utils/multer");
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
-const { signup, login ,getAllUsers} = require('../controllers/UserControllers');
+const { signup, login,deleteUser ,getAllUsers,restoreUser,getDeletedUsers } = require('../controllers/UserControllers');
 const authMiddleware = require('../middleware/AuthMiddleware');
 router.post("/login",login);
 router.post("/signup",signup);
@@ -11,6 +11,11 @@ router.get('/users', getAllUsers);
 // router.get('/me', authMiddleware, (req, res) => {
 //     res.json(req.user);
 //   });
+
+
+router.put("/:id/restore",restoreUser)
+router.put("/:id",deleteUser)
+router.get('/deleted', getDeletedUsers);
 router.get("/me", authMiddleware, async (req, res) => {
   try {
     const user = await User.findByPk(req.user.userId, {

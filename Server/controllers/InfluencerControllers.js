@@ -307,7 +307,7 @@ exports.registerInfluencer = async (req, res) => {
         });
       }
       
-      // إنشاء سجل تسجيل الإنفلونسر وربطه بمعرّف المستخدم
+      
       const newInfluencer = await InfluencerRegistration.create({
         userId: user.id,
         bio,
@@ -570,7 +570,7 @@ console.log(influencerId);
     // العثور على المؤثر في قاعدة البيانات
     const influencer = await InfluencerRegistration.findOne({
       where: { id: influencerId },
-      include: [{ model: User }] // مهم: لازم تكون العلاقة معرفة
+      include: [{ model: User }] 
     });
 console.log(influencer)
     if (!influencer) {

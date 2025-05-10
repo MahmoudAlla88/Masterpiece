@@ -130,3 +130,56 @@ exports.signup = async (req, res) => {
       });
     }
   };
+
+
+
+  exports.deleteUser = async (req, res) => {
+    const { id } = req.params;
+  
+ 
+    try {
+      // destroy ترجع عدد الصفوف المحذوفة
+      const deletedRows = await User.findByPk(id);
+      if (!deletedRows) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      await deletedRows.destroy();
+  
+      // 204 = No Content
+      return res.sendStatus(204);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Server error' });
+    }
+  };
+
+  exports.restoreUser = async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      // 1) ابحث عن المستخدم ضمن السجلات المحذوفة
+      const user = await User.findByPk(id, { paranoid: false });
+      if (!user) {
+        return res.status(404).json({ error: 'User not found (even in trash)' });
+      }
+  
+      // 2) إذا لم يكن محذوفًا أصلاً
+      if (user.deletedAt === null) {
+        return res.status(400).json({ error: 'User is already active' });
+      }
+  
+      // 3) قم بالاسترجاع
+      await user.restore();               // ← أو: await User.restore({ where: { id } });
+  
+      return res.status(200).json({ message: 'User restored successfully' });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Server error' });
+    }
+  };
+
+  exports.getDeletedUsers = async (req, res) => {
+    const users = await User.find({ deletedAt: { $ne: null } });
+    res.json({ success: true, users });
+  };

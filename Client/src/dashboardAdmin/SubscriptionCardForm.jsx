@@ -553,9 +553,10 @@ const SubscriptionCardForm = () => {
               {plans.length === 0 ? (
                 <p className="text-gray-500 col-span-full text-center py-8">No active plans found.</p>
               ) : (
+                
                 plans.map((plan, index) => (
                   <motion.div
-                    key={plan.id}
+                    key={plan?.id}
                     className="bg-white flex flex-col justify-between p-8 rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-2xl relative overflow-hidden group"
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -590,16 +591,16 @@ const SubscriptionCardForm = () => {
                     
                     {/* Content */}
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-800 mb-4">{plan.title}</h3>
+                      <h3 className="text-2xl font-bold text-gray-800 mb-4">{plan?.title}</h3>
                       <div className="flex items-baseline mb-6">
-                        <span className="text-4xl font-bold text-purple-600">{plan.price}</span>
-                        <span className="text-gray-500 ml-2">JD / {plan.monthly_duration} {plan.monthly_duration > 1 ? 'months' : 'month'}</span>
+                        <span className="text-4xl font-bold text-purple-600">{plan?.price}</span>
+                        <span className="text-gray-500 ml-2">JD / {plan?.monthly_duration} {plan?.monthly_duration > 1 ? 'months' : 'month'}</span>
                       </div>
-                      <p className="text-gray-600 mb-6">{plan.description}</p>
+                      <p className="text-gray-600 mb-6">{plan?.description}</p>
                       <div className="border-t border-gray-100 pt-6 mb-6">
                         <h4 className="font-semibold text-gray-800 mb-4">Features</h4>
                         <ul className="space-y-3">
-                          {plan.features.map((feature, idx) => (
+                          {plan?.features.map((feature, idx) => (
                             <li key={idx} className="flex items-start">
                               <span className="mr-2 mt-1 text-purple-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

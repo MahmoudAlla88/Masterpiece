@@ -166,17 +166,24 @@
 // };
 
 // export default AdRequestBooking;
+
 import React, { useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import axios from 'axios';  // تأكد من استيراد axios
+import axios from 'axios';  
 import {  toast } from 'react-toastify'; 
 
+
 export default function AdRequestBooking() {
+  const location = useLocation();
+  const influencerPrice = parseFloat(location.state?.influencerPrice || 0);
+ const influncerName=location.state?.influncerName;
+ console.log(influncerName);
+  console.log("influencerPrice",influencerPrice);
   const { id } = useParams(); 
   const navigate = useNavigate();
   const currentUser = useSelector((state) => state.user.currentUser);
-  console.log(currentUser)
+  console.log(currentUser);
   const [influencerId, setInfluencerId] = useState('');
   const [campaignTitle, setCampaignTitle] = useState('');
   const [brief, setBrief] = useState('');
@@ -189,36 +196,56 @@ export default function AdRequestBooking() {
   const [successMessage, setSuccessMessage] = useState('');
 
 
-  const handleSubmit = async (e) => {
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   setErrorMessage('');
+  //   setSuccessMessage('');
+
+  //   try {
+  //     const response = await axios.post(
+  //       'http://localhost:4000/api/users/request-ad',  
+  //       {
+  //        userId: currentUser?.id,
+  //         influencerId:id,
+  //         campaignTitle,
+  //         brief,
+  //         platform,
+  //         contentType,
+  //         proposedPrice,
+  //         requestedDate,
+  //       }
+  //     );
+  //     setSuccessMessage('The advertisement request was successfully sent.');
+  //     toast.success('The advertisement request was successfully sent.');
+  //   } catch (error) {
+  //     setErrorMessage('An error occurred while sending the request.');
+  //     toast.error('An error occurred while sending the request.');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
     setErrorMessage('');
-    setSuccessMessage('');
+    setLoading(true);
 
-    try {
-      const response = await axios.post(
-        'http://localhost:4000/api/users/request-ad',  
-        {
-         userId: currentUser?.id,
-          influencerId:id,
-          campaignTitle,
-          brief,
-          platform,
-          contentType,
-          proposedPrice,
-          requestedDate,
-        }
-      );
-      setSuccessMessage('The advertisement request was successfully sent.');
-      toast.success('The advertisement request was successfully sent.');
-    } catch (error) {
-      setErrorMessage('An error occurred while sending the request.');
-      toast.error('An error occurred while sending the request.');
-    } finally {
-      setLoading(false);
-    }
+    const payload = {
+      userId: currentUser?.id,
+      influencerId: id,
+      influncerName,
+      campaignTitle,
+      brief,
+      platform,
+      contentType,
+      proposedPrice: influencerPrice,
+      requestedDate,
+   
+    };
+
+    // Navigate to payment page with all data
+    navigate('/payment', { state: payload });
   };
-
   return (
     <div className="max-w-4xl mx-auto my-8 p-6 bg-white rounded-lg shadow-lg">
       <div className="text-center mb-8">
@@ -316,17 +343,17 @@ export default function AdRequestBooking() {
               Proposed Price (JD) <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <input
-                id="proposedPrice"
-                type="number"
-                min="0"
-                step="0.01"
-                value={proposedPrice}
-                onChange={(e) => setProposedPrice(e.target.value)}
-                className="w-full p-3 pl-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-300 focus:border-purple-500 outline-none transition"
-                placeholder="0.00"
-                required
-              />
+            <input
+        id="proposedPrice"
+        type="number"
+        // ربط القيمة مباشرةً بـ influencerPrice
+        value={influencerPrice}
+        // منع المستخدم من تعديلها
+        readOnly
+        className="w-full p-3 pl-10 border border-gray-300 rounded-md bg-gray-100 focus:ring-2 focus:ring-purple-300 focus:border-purple-500 outline-none transition"
+        placeholder="0.00"
+        required
+      />
               <span className="absolute left-3 top-3 text-gray-500">JD</span>
             </div>
             <p className="text-xs text-gray-500 mt-1">Enter your budget in Jordanian Dinars</p>

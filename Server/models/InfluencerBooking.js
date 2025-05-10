@@ -4,77 +4,81 @@ const sequelize = require('../config/config');
 
 const InfluencerBooking = sequelize.define('InfluencerBooking', {
 
-  id: {                                         // مفتاح رئيسي
+  id: {                                        
     type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true,
   },
 
-  userId: {                                    // صاحب الحملة (الشركة / المعلن)
+  userId: {                                    
     type: DataTypes.BIGINT,
     allowNull: false,
   },
 
-  influencerId: {                               // المؤثّر المطلوب
+  influencerId: {                              
     type: DataTypes.BIGINT,
     allowNull: false,
   },
 
-  campaignTitle: {                              // عنوان مختصر للحملة
+  campaignTitle: {                              
     type: DataTypes.STRING(120),
     allowNull: false,
   },
 
-  brief: {                                      // ملخّص المطلوب من الإعلان
+  brief: {                                      
     type: DataTypes.TEXT,
     allowNull: false,
   },
 
-  platform: {                                   // المنصّة المستهدفة
+  platform: {                                  
     type: DataTypes.ENUM('instagram', 'tiktok', 'youtube', 'facebook', 'other'),
     allowNull: false,
   },
 
-  contentType: {                                // نوع المحتوى
+  contentType: {                               
     type: DataTypes.ENUM('post', 'story', 'reel', 'video', 'blog'),
     allowNull: false,
   },
 
-  proposedPrice: {                              // السعر المقترح من الشركة
+  proposedPrice: {                             
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
        
   },
 
-  requestedDate: {                              // التاريخ المطلوب للنشر
+  requestedDate: {                            
     type: DataTypes.DATE,
     allowNull: false,
   },
 
-  scheduledDate: {                              // التاريخ المؤكَّد (يحدّده المؤثّر بعد القبول)
+  scheduledDate: {                            
     type: DataTypes.DATE,
     allowNull: true,
   },
 
-  status: {                                     // حالة الطلب
+  status: {                                   
     type: DataTypes.ENUM(
-      'pending',     // بانتظار ردّ المؤثّر
-      'accepted',    // وافق المؤثّر
+      'pending',    
+      'accepted',    
       'rejected', 
-      'scheduled', // رفض المؤثّر
-      'paid',        // تم الدفع (مبلغ مُحتجز)
-      'published',   // نُشِر الإعلان
-      'cancelled'    // أُلغِي (انتهت المهلة أو بإرادة أحد الطرفين)
+      'scheduled', 
+      'paid',       
+      'published', 
+      'cancelled'  
     ),
     defaultValue: 'pending',
   },
 
-  paymentIntentId: {                            // معرّف عملية الدفع (Stripe/PayPal)
+  paymentIntentId: {                
     type: DataTypes.STRING,
     allowNull: true,
   },
- 
-  expiresAt: {                                  // آخر مهلة للدفع قبل الإلغاء التلقائي
+  postUrl: {                       // سيُخزَّن في قاعدة البيانات كـ post_url
+    type: DataTypes.STRING,
+    allowNull: true,
+    validate: { isUrl: true },     // تأكد أن القيمة رابط صالح
+  },
+  expiresAt: {                                
     type: DataTypes.DATE,
     allowNull: false,
   },

@@ -9,7 +9,7 @@ router.get('/all', bookingController.getAllAdRequests);
 
 // Route لعرض الطلبات الخاصة بمؤثر معين
 router.get('/influencer/:influencerId', bookingController.getAdRequestsByInfluencerId);
-
+router.put('/status/:requestId', bookingController.influencerActionOnBooking );
 // Route لتحديث حالة الطلب
 router.put('/update-status/:requestId', bookingController.updateAdRequestStatus);
 router.get('/bookings/:userId', bookingController.getBookingsByUserId); 
@@ -19,4 +19,6 @@ router.get(
     bookingController.getCalendarBookingsForInfluencer
   );
   router.get('/influencers/:influencerId/overview', bookingController.getInfluencerOverview);
-module.exports = router;
+
+router.get('/top',  bookingController.getTopInfluencers);
+  module.exports = router;

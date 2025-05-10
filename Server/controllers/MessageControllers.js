@@ -1,5 +1,8 @@
 const ContactMessage = require("../models/Contact");
 
+ const nodemailer= require('nodemailer');
+ const dotenv= require('dotenv');
+  dotenv.config();
 const createMessage = async (req, res) => {
   try {
     const { name, email, message } = req.body;
@@ -86,4 +89,62 @@ const getMessages = async (req, res) => {
     }
   };
   
-  module.exports = {createMessage , getMessages , getMessagesByReadStatus , updateMessageReadStatus }
+
+
+
+
+
+
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: process.env.SMTP_PORT || 465,
+    secure: true,                    // true لـ 465 – false لـ STARTTLS
+    auth: {
+      user: process.env.EMAIL_USER,   // بريدك
+      pass: process.env.EMAIL_PASS,   // كلمة السر أو App‑Password
+    },
+  });
+
+
+
+ const replyToMessage = async (req, res) => {
+    const { messageId } = req.params;
+    const { replyText } = req.body;
+  
+    if (!replyText?.trim()) {
+      return res.status(400).json({ message: 'نصّ الرد مطلوب' });
+    }
+  
+    try {
+      // 1. جلب الرسالة الأصليّة
+      const msg = await ContactMessage.findByPk(messageId);
+      if (!msg) {
+        return res.status(404).json({ message: 'الرسالة غير موجودة' });
+      }
+  console.log(msg)
+      // 2. إرسال البريد
+      const mailOpts = {
+        from: `"${process.env.EMAIL_USER}" <${process.env.EMAIL_USER}>`,
+        to: msg.email,                          // بريد صاحب الرسالة
+        subject: `Re: ${msg.subject}`,
+        text: replyText,
+        html: `<p>${replyText.replace(/\n/g, '<br>')}</p>`,
+      };
+  
+      await transporter.sendMail(mailOpts);
+  
+      // 3. تحديث السجل في قاعدة البيانات (مثال: إضافة حقل replyText و repliedAt)
+      await msg.update({ replyText, repliedAt: new Date() });
+  
+      res.json({ success: true, message: 'Reply sent and saved.' });
+    } catch (err) {
+      console.error('Reply error:', err);
+      res.status(500).json({ message: 'Failed to send reply.' });
+    }
+  };
+
+
+
+
+  module.exports = {createMessage , getMessages , getMessagesByReadStatus , updateMessageReadStatus , replyToMessage}

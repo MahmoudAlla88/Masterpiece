@@ -14,7 +14,6 @@ exports.createAdRequest = async (req, res) => {
     const newRequest = await InfluencerAdRequest.create({
       userId,
       influencerId,
-      adTitle,
       adDetails,
       adDuration,
       budget,
@@ -22,11 +21,11 @@ exports.createAdRequest = async (req, res) => {
     });
 
     const payment = await Payment.create({
-      paymentMethod: 'credit card', // استخدم وسيلة الدفع المناسبة هنا
-      paymentAmount: 100.00, // استخدم المبلغ المناسب هنا
+      paymentMethod: 'credit card', 
+      paymentAmount: 100.00, 
       paymentDate: new Date(),
       referenceId: newRequest.id,
-      referenceType: 'adRequest', // تحديد نوع العملية
+      referenceType: 'adRequest', 
       paymentStatus: 'pending',
     });
 
