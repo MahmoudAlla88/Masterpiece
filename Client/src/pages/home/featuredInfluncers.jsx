@@ -3,20 +3,39 @@
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { FaTag, FaUsers, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-
+import axios from "axios";
 const FeaturedInfluencers = () => {
-  const influencers = [
-    { id: 1, name: "Leen Doe", expertise: "Fashion", followers: "1M+", img: "src/assets/img/pexels-photo-6953586.webp" },
-    { id: 2, name: "Deep Smith", expertise: "Beauty", followers: "500K+", img: "src/assets/img/pexels-photo-19172451.webp" },
-    { id: 3, name: "Mike Johnson", expertise: "Fitness", followers: "2M+", img: "src/assets/img/pexels-photo-19172451.webp" },
-    { id: 4, name: "Sarah Lee", expertise: "Travel", followers: "800K+", img: "src/assets/img/pexels-photo-6635041.webp" },
-    { id: 5, name: "Alex Wong", expertise: "Tech", followers: "1.2M+", img: "src/assets/img/pexels-photo-6953586.webp" },
-    { id: 6, name: "Emma Davis", expertise: "Lifestyle", followers: "950K+", img: "src/assets/img/pexels-photo-19172451.webp" }
-  ];
-
+  // const influencers = [
+  //   { id: 1, name: "Leen Doe", expertise: "Fashion", followers: "1M+", img: "src/assets/img/pexels-photo-6953586.webp" },
+  //   { id: 2, name: "Deep Smith", expertise: "Beauty", followers: "500K+", img: "src/assets/img/pexels-photo-19172451.webp" },
+  //   { id: 3, name: "Mike Johnson", expertise: "Fitness", followers: "2M+", img: "src/assets/img/pexels-photo-19172451.webp" },
+  //   { id: 4, name: "Sarah Lee", expertise: "Travel", followers: "800K+", img: "src/assets/img/pexels-photo-6635041.webp" },
+  //   { id: 5, name: "Alex Wong", expertise: "Tech", followers: "1.2M+", img: "src/assets/img/pexels-photo-6953586.webp" },
+  //   { id: 6, name: "Emma Davis", expertise: "Lifestyle", followers: "950K+", img: "src/assets/img/pexels-photo-19172451.webp" }
+  // ];
+ const [influencers, setInfluencers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cardsPerView, setCardsPerView] = useState(4);
-
+useEffect(() => {
+    const controller = new AbortController();
+    const fetchInfluencers = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:4000/api/influencer/features", {
+          signal: controller.signal,
+        });
+         console.log(data);
+        setInfluencers(data.influencers); 
+       
+      } catch (err) {
+        if (!axios.isCancel(err)) console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInfluencers();
+    return () => controller.abort();
+  }, []);
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 640) {
@@ -45,8 +64,8 @@ const FeaturedInfluencers = () => {
   };
 
   return (
-    <section className="py-16 px-6 bg-gray-50 text-center relative">
-      <h2 className="text-3xl md:text-4xl font-bold text-purple-600 mb-10">
+    <section className="py-16 px-6 bg-gradient-to-br from-blue-50 to-purple-100 text-center relative">
+      <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 to-[#D63384] bg-clip-text text-transparent mb-10">
         Most Popular Influencers
       </h2>
       <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-12">
@@ -88,7 +107,7 @@ const FeaturedInfluencers = () => {
               >
                 <div className="h-64 overflow-hidden">
                   <img
-                    src={influencer.img}
+                    src={`http://localhost:4000/${influencer.InfluencerRegistration.profileImage}`}
                     alt={influencer.name}
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                   />
@@ -97,13 +116,14 @@ const FeaturedInfluencers = () => {
                 <div className="p-6">
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">{influencer.name}</h3>
                   <div className="flex justify-between mt-2">
+
                     <div className="flex items-center">
                       <FaTag className="mr-2 text-[#D63384]" />
-                      <span className="text-gray-700 text-sm">{influencer.expertise}</span>
+                      <span className="text-gray-700 text-sm ">{influencer.location}</span>
                     </div>
                     <div className="flex items-center">
                       <FaUsers className="mr-2 text-[#D63384]" />
-                      <span className="text-gray-700 text-sm">{influencer.followers}</span>
+                      <span className="text-gray-700 text-sm">{influencer.InfluencerRegistration.stats.followers}</span>
                     </div>
                   </div>
                   

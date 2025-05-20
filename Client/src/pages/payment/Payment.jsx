@@ -5,6 +5,7 @@ import {  toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 export default function PaymentPage() {
+    const navigate = useNavigate();
   const location = useLocation();
   const [paymentData, setPaymentData] = useState(null);
   const [cardNumber, setCardNumber] = useState("");
@@ -15,14 +16,39 @@ export default function PaymentPage() {
   const [paymentMethod, setPaymentMethod] = useState("creditCard");
   const currentUser = useSelector((state) => state.user.currentUser);
   console.log("s",currentUser)
+  const [preview, setPreview] = useState(null);
+  const [loadingPreview, setLoadingPreview] = useState(true);
   useEffect(() => {
-    // Get data from navigation state
+    //الداتا الي من صفحه requestbooking
     if (location.state) {
       setPaymentData(location.state);
     }
-  }, [location]);
+     if (!location.state) return;
+    const { userId, proposedPrice, requestedDate } = location.state;
 
-  const formatCardNumber = (value) => {
+    axios.post('http://localhost:4000/api/users/booking-preview', {
+      userId, proposedPrice, requestedDate
+    })
+    .then(res => setPreview(res.data))
+    .catch(err => toast.error('Failed to load discount preview'))
+    .finally(() => setLoadingPreview(false));
+  }, [location]);
+ 
+
+   if (loadingPreview) {
+    return <p>Loading price…</p>;
+  }
+
+  if (!preview) {
+    return <p>Couldn’t calculate your price. Please try again.</p>;
+  }
+  
+    const { originalPrice, finalPrice, discountApplied, savings } = preview;
+  const expiryDate1 = new Date(currentUser.subscriptionexpiry);
+const isActive   = expiryDate1 > new Date();
+const hasSlots   = preview.savings > 0; 
+  
+    const formatCardNumber = (value) => {
     const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
     const matches = v.match(/\d{4,16}/g);
     const match = (matches && matches[0]) || "";
@@ -44,56 +70,13 @@ export default function PaymentPage() {
     setCardNumber(formattedValue.substring(0, 19)); // limit to 16 digits + 3 spaces
   };
 
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     setIsLoading(true);
-    
-//     // Simulate payment processing
-//     setTimeout(() => {
-//       setIsLoading(false);
-//       alert("Payment processed successfully!");
-//       // Redirect logic would go here
-//     }, 2000);
-//   };
-// const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setLoading(true);
-//     setErrorMessage('');
-//     setSuccessMessage('');
-//     setTimeout(() => {
-//               setIsLoading(false);
-//               alert("Payment processed successfully!");
-//               // Redirect logic would go here
-//             }, 2000);
-//     try {
-//       const response = await axios.post(
-//         'http://localhost:4000/api/users/request-ad',  
-//         {
-//          userId: currentUser?.id,
-//           influencerId:id,
-//           campaignTitle,
-//           brief,
-//           platform,
-//           contentType,
-//           proposedPrice,
-//           requestedDate,
-//         }
-//       );
-//       setSuccessMessage('The advertisement request was successfully sent.');
-//       toast.success('Payment processed successfully!');
-//     } catch (error) {
-//       setErrorMessage('An error occurred while sending the request.');
-//       toast.error('An error occurred while sending the request.');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+
 const handleSubmit = async (method, extra = {}) => {
   
     setIsLoading(true);
     try {
         const payload = {
-            userId: currentUser.id,        // <-- ضروري
+            userId: currentUser.id,       
             influencerId: paymentData.influencerId,
             campaignTitle: paymentData.campaignTitle,
             brief: paymentData.brief,
@@ -102,19 +85,26 @@ const handleSubmit = async (method, extra = {}) => {
             proposedPrice: paymentData.proposedPrice,
             requestedDate: paymentData.requestedDate,
             paymentMethod: method,
-            // إذا PayPal:
-            ...(method === 'paypal' && { orderID: data.orderID, payerID: data.payerID }),
+          
+            ...(method === 'paypal' && { orderID: extra.orderID, payerID: extra.payerID }),
           };
       console.log(payload);
       await axios.post('http://localhost:4000/api/users/request-ad', payload);
-      setPaymentData(null);
+  
+            toast.success("Payment successful! Returning to previous page.", {
+          autoClose: 3000,
+            closeOnClick: true,
+  closeButton: true,
+         
+         
+        });
+     setTimeout(() => navigate(-1), 3000);
+
+        // setPaymentData(null);
     setCardName('');
     setCardNumber('');
     setExpiryDate('');
     setCvv('');
-    toast.success('Payment & request processed successfully!')
-      Navigate("/InfluencersPage")
-    
     } catch (error) {
       console.error(error);
       toast.error('An error occurred while sending the request.');
@@ -131,7 +121,9 @@ const handleSubmit = async (method, extra = {}) => {
       </div>
     );
   }
-
+const priceToPay = preview.discountApplied
+  ? preview.finalPrice
+  : preview.originalPrice;
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
@@ -176,8 +168,21 @@ const handleSubmit = async (method, extra = {}) => {
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <div className="flex justify-between items-center">
                     <p className="text-lg font-semibold text-gray-800">Total Amount</p>
-                    <p className="text-xl font-bold text-purple-700">${paymentData.proposedPrice.toFixed(2)}</p>
-                  </div>
+                     {preview.discountApplied ? (
+    <p className="text-xl font-bold text-purple-700">
+      {/* Old price crossed out */}
+      <span className="line-through text-gray-500 mr-2">
+        ${paymentData.proposedPrice.toFixed(2)}
+      </span>
+      {/* New discounted price */}
+      ${preview.finalPrice.toFixed(2)}
+    </p>
+  ) : (
+    <p className="text-xl font-bold text-purple-700">
+      {/* No discount, just show original */}
+      ${paymentData.proposedPrice.toFixed(2)}
+    </p>
+  )}     </div>
                 </div>
               </div>
             </div>
@@ -207,45 +212,7 @@ const handleSubmit = async (method, extra = {}) => {
                 </button>
               </div>
             </div> 
-{/* <PayPalScriptProvider
-              options={{
-                "client-id": "AU5e_yUL8prhNgnKaZSZzhXsTmTOlWeDW5YsAg3JIjdWJjehIpyy7wLKYjfakSXoUrPaP07FroujGFne",
-                components: "buttons",
-                currency: "USD"
-              }}
-            >
-              <div className="text-center">
-                <PayPalButtons
-                  style={{ layout: "vertical", color: "blue", shape: "rect", label: "paypal" }}
-                  createOrder={(data, actions) => {
-                    return actions.order.create({
-                      purchase_units: [
-                        {
-                          amount: {
-                            value: paymentData.proposedPrice.toFixed(2)
-                          }
-                        }
-                      ]
-                    });
-                  }}
-                  onApprove={async (data, actions) => {
-                    setIsLoading(true);
-                    return actions.order.capture().then((details) => {
-                      setIsLoading(false);
-                      alert(`Payment completed by ${details.payer.name.given_name}`);
-                      // TODO: redirect or update status
-                    });
-                  }}
-                  onError={(err) => {
-                    console.error(err);
-                    alert("An error occurred with your payment. Please try again.");
-                  }}
-                  onCancel={() => {
-                    alert("Payment cancelled.");
-                  }}
-                />
-              </div>
-            </PayPalScriptProvider> */}
+
        
             {/* Payment Form */}
             {paymentMethod === "creditCard" ? (
@@ -331,9 +298,18 @@ const handleSubmit = async (method, extra = {}) => {
                         </svg>
                         Processing...
                       </span>
-                    ) : (
-                      `Pay $${paymentData.proposedPrice.toFixed(2)}`
-                    )}
+                    ) :preview?.discountApplied ? (
+    // Discounted pay text
+    <span>
+      <span className="line-through text-gray-300 mr-2">
+        ${preview.originalPrice.toFixed(2)}
+      </span>
+      Pay ${preview.finalPrice.toFixed(2)}
+    </span>
+  ) : (
+    // No discount
+    `Pay $${preview?.originalPrice.toFixed(2)}`
+  )}
                   </button>
                 </div>
 
@@ -377,7 +353,7 @@ const handleSubmit = async (method, extra = {}) => {
                       purchase_units: [
                         {
                           amount: {
-                            value: paymentData.proposedPrice.toFixed(2)
+                              value: priceToPay.toFixed(2)
                           }
                         }
                       ]

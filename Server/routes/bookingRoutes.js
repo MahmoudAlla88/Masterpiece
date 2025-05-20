@@ -21,4 +21,12 @@ router.get(
   router.get('/influencers/:influencerId/overview', bookingController.getInfluencerOverview);
 
 router.get('/top',  bookingController.getTopInfluencers);
-  module.exports = router;
+
+ router.post('/booking-preview', bookingController.previewBooking);
+
+
+router.get('/influencers/:id/booked-slots', bookingController.getBookedSlots);
+
+
+
+module.exports = router;

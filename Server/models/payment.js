@@ -1,34 +1,50 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
+const SubscriptionPlan = require('./SubscriptionPlan');  // Relationship with SubscriptionPlan
 
 const Payment = sequelize.define('Payment', {
-  paymentMethod: {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  payment_method: {
+    type: DataTypes.STRING,
+    allowNull: false,  // Can be 'creditCard', 'paypal', etc.
+  },
+  UserId: {
+    type: DataTypes.BIGINT,
+    references: {
+      model: 'Users',
+      key: 'id',
+    },
+  },
+  amount: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+  },
+  payment_status: {
     type: DataTypes.STRING,
     allowNull: false,
+    defaultValue: 'pending',  // 'pending', 'completed', 'failed', etc.
   },
-  paymentStatus: {
+  transaction_id: {
     type: DataTypes.STRING,
-    defaultValue: 'pending', // يمكن أن تكون: 'pending', 'completed', 'failed'
+    allowNull: true,  // Transaction ID from PayPal or Payment Gateway
   },
-  paymentAmount: {
-    type: DataTypes.DECIMAL,
-    allowNull: false,
-  },
-  paymentDate: {
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
-  // ID مرجع (الذي يشير إلى النوع المعني بالدفعة مثل طلب الإعلان أو الاشتراك)
-  referenceId: {
+  subscription_plan_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: SubscriptionPlan, // Foreign key reference to SubscriptionPlan table
+      key: 'id'
+    }
   },
-  // نوع الكيان الذي تم الدفع له: "adRequest" أو "subscription" أو أي نوع آخر
-  referenceType: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  // يمكن إضافة معلومات إضافية مثل رقم المعاملة (transactionId)، إلخ.
+}, {
+  timestamps: true,
+  paranoid: true,  // For soft deletes
+  tableName: 'payments',  // Table name in the database
+  underscored: true,
 });
 
 module.exports = Payment;

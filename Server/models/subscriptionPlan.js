@@ -20,7 +20,7 @@ const SubscriptionPlan = sequelize.define('SubscriptionPlan', {
   monthly_duration: {
     type: DataTypes.INTEGER,
     allowNull: true,
-    defaultValue: 1, // مثلاً مدة اشتراك شهرية افتراضية = شهر 1
+    defaultValue: 1, 
   },
   description: {
     type: DataTypes.TEXT,

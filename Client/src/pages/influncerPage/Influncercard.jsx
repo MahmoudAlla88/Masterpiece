@@ -9,10 +9,18 @@ import {
   ChevronUp,
 } from "lucide-react";
 
-
+import { useSelector } from 'react-redux';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import AiInfluencer from "../home/AiInfluncer";
 export default function InfluencerListPage() {
+  const currentUser = useSelector((state) => state.user.currentUser);
+
+    const expiryDate = new Date(currentUser?.subscriptionexpiry);
+  const now        = new Date();
+
+  // 2. Check that the user has an active (not-expired) subscription
+  const isActive   = expiryDate > now;
   const [influencers, setInfluencers] = useState([]);
   const [filteredInfluencers, setFilteredInfluencers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -181,6 +189,15 @@ if (selectedCategories.length > 0) {
   const toggleFilters = () => {
     setFiltersOpen(!filtersOpen);
   };
+const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+  const totalPages = Math.ceil(filteredInfluencers.length / itemsPerPage);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredInfluencers, searchTerm, selectedCategories]);
+ const startIndex = (currentPage - 1) * itemsPerPage;
+  const pageItems = filteredInfluencers.slice(startIndex, startIndex + itemsPerPage);
 
   // Helper function to get social media icon
   const getSocialIcon = (platform) => {
@@ -362,10 +379,12 @@ if (selectedCategories.length > 0) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 py-10 px-4 sm:px-6 lg:px-8">
+    <><AiInfluencer/> 
+    <div className="min-h-screen bg-gradient-to-br bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
+      
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-purple-500 mb-2">
             Our Influencer Network
           </h1>
           <p className="text-lg text-gray-600">
@@ -406,14 +425,14 @@ if (selectedCategories.length > 0) {
                   <ChevronDown className="ml-2 h-5 w-5" />
                 )}
               </button>
-
+{isActive&&
               <button
     onClick={() => setShowBrandForm(!showBrandForm)}
     className="px-5 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
   >
     {showBrandForm ? "Close Brand Form" : "Send Brand Info to API"}
   </button>
-
+}
             </div>
           </div>
 
@@ -533,9 +552,10 @@ if (selectedCategories.length > 0) {
         </div>
 
         {/* Influencer Cards Grid */}
-        {filteredInfluencers.length > 0 ? (
+        {pageItems.length> 0 ? (
+        
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredInfluencers.map((influencer) => (
+            {pageItems.map((influencer) => (
               <div
                 key={influencer.id}
                 className="bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:transform hover:scale-105 flex flex-col justify-between"
@@ -651,8 +671,13 @@ if (selectedCategories.length > 0) {
                   </button>
                 </div>
               </div>
+            
             ))}
+         
+    
+          
           </div>
+       
         ) : (
           <div className="bg-white rounded-xl shadow-lg p-10 text-center">
             <h3 className="text-xl font-medium text-gray-700 mb-2">
@@ -669,7 +694,36 @@ if (selectedCategories.length > 0) {
             </button>
           </div>
         )}
+               <div className="flex justify-center gap-2 mt-6">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1 rounded ${
+                  currentPage === i + 1 ? 'bg-purple-600 text-white' : 'bg-gray-200'
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+               </div>
       </div>
-    </div>
+    </div></>
   );
 }

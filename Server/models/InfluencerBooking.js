@@ -82,7 +82,24 @@ const InfluencerBooking = sequelize.define('InfluencerBooking', {
     type: DataTypes.DATE,
     allowNull: false,
   },
-
+originalPrice: {
+  type: DataTypes.DECIMAL(10, 2),
+  allowNull: true,       // أصبح مسموح أن يكون null
+  defaultValue: 0,       // اختياري: يضع 0 إذا لم تُمرَّر قيمة
+  field: 'original_price'
+},
+discountApplied: {
+  type: DataTypes.BOOLEAN,
+  allowNull: true,       // أصبح مسموح أن يكون null
+  defaultValue: false,   // اختياري: يضع false إذا لم تُمرَّر قيمة
+  field: 'discount_applied'
+},
+finalPrice: {
+  type: DataTypes.DECIMAL(10, 2),
+  allowNull: true,       // أصبح مسموح أن يكون null
+  defaultValue: 0,       // اختياري: يضع 0 إذا لم تُمرَّر قيمة
+  field: 'final_price'
+}
 }, {
   tableName: 'influencer_bookings',
   timestamps: true,

@@ -199,18 +199,27 @@
 // export default ContactUs;
 
 
-import { useState } from "react";
+import { useState, useEffect  } from "react";
 import { motion } from "framer-motion";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { useSelector } from 'react-redux';
 const ContactUs = () => {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-
+const currentUser = useSelector((state) => state.user.currentUser);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+useEffect(() => {
+    if (currentUser) {
+      setFormData({
+        name: currentUser.name,
+        email: currentUser.email,
+        message: ""
+      });
+    }
+  }, [currentUser]);
   const handleSubmit = async (e) => {
     e.preventDefault();
 

@@ -2,7 +2,8 @@ const User = require('./User');
 const InfluencerRegistration = require('./InfluencerRegistration');
 const InfluencerAdRequest = require('./InfluencerAdRequest');
 const InfluencerBooking = require('./InfluencerBooking');
-
+const SubscriptionPlan = require('./SubscriptionPlan');
+const Payment = require('./Payment');
 User.hasOne(InfluencerRegistration, { foreignKey: 'userId',    });
 InfluencerRegistration.belongsTo(User, { foreignKey: 'userId' , });
 
@@ -26,4 +27,11 @@ InfluencerRegistration.hasMany(InfluencerBooking, { foreignKey: 'id' ,sourceKey 
     });
 InfluencerBooking.belongsTo(InfluencerRegistration, { foreignKey: 'influencerId',  targetKey : 'userId',   });
 
-module.exports = { User, InfluencerRegistration , InfluencerBooking };
+
+// In SubscriptionPlan model file
+SubscriptionPlan.hasMany(Payment, { foreignKey: 'subscription_plan_id' });
+Payment.belongsTo(SubscriptionPlan, { foreignKey: 'subscription_plan_id' });
+
+
+module.exports = { User, InfluencerRegistration , InfluencerBooking ,  SubscriptionPlan,
+  Payment,};

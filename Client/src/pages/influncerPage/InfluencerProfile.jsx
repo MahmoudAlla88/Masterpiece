@@ -28,54 +28,105 @@ const InfluencerProfile = () => {
   console.log(profileData);
 
 
-  const handleAdRequest = () => {
-    if(currentUser!=null){
-    console.log("nn?",profileData.advertisingcost)
-    navigate(`/adbooking-request/${profileData.userId}`, {
-      state: {
-        influencerPrice: profileData.advertisingcost*(1.1), // أو أي اسم عندك للسعر
-        influncerName:profileData.User.name
-      },
-    }
-    );}
-    else {
-      toast(
-        ({ closeToast }) => (
-          <div>
-            <p className="font-semibold mb-2">
-              You need to log in before continuing
-            </p>
+  // const handleAdRequest = () => {
+  //   if(currentUser!=null){
+  //   console.log("nn?",profileData.advertisingcost)
+  //   navigate(`/adbooking-request/${profileData.userId}`, {
+  //     state: {
+  //       influencerPrice: profileData.advertisingcost*(1.1), // أو أي اسم عندك للسعر
+  //       influncerName:profileData.User.name
+  //     },
+  //   }
+  //   );}
+  //   else {
+  //     toast(
+  //       ({ closeToast }) => (
+  //         <div>
+  //           <p className="font-semibold mb-2">
+  //             You need to log in before continuing
+  //           </p>
   
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  closeToast();          // close the toast
-                  navigate("/login");    // go to login page
-                }}
-                className="rounded bg-purple-500 px-3 py-1 text-white"
-              >
-                Log In
-              </button>
+  //           <div className="flex gap-2">
+  //             <button
+  //               onClick={() => {
+  //                 closeToast();          // close the toast
+  //                 navigate("/login");    // go to login page
+  //               }}
+  //               className="rounded bg-purple-500 px-3 py-1 text-white"
+  //             >
+  //               Log In
+  //             </button>
   
-              <button
-                onClick={closeToast}
-                className="rounded border px-3 py-1"
-              >
-                Cancel
-              </button>
-            </div>
+  //             <button
+  //               onClick={closeToast}
+  //               className="rounded border px-3 py-1"
+  //             >
+  //               Cancel
+  //             </button>
+  //           </div>
+  //         </div>
+  //       ),
+  //       {
+  //         autoClose: false,     // keep toast open until user chooses
+  //         closeOnClick: false,
+  //         position: "top-center",
+  //         theme: "colored",
+  //       }
+  //     );
+  //   }
+  // };
+const handleAdRequest = () => {
+  // 1) أولاً: إذا ما فيه مستخدم، طلّع الـ toast
+  if (!currentUser) {
+    toast(
+      ({ closeToast }) => (
+        <div>
+          <p className="font-semibold mb-2">
+            You need to log in before continuing
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                closeToast();
+                navigate("/login");
+              }}
+              className="rounded bg-purple-500 px-3 py-1 text-white"
+            >
+              Log In
+            </button>
+            <button
+              onClick={closeToast}
+              className="rounded border px-3 py-1"
+            >
+              Cancel
+            </button>
           </div>
-        ),
-        {
-          autoClose: false,     // keep toast open until user chooses
-          closeOnClick: false,
-          position: "top-center",
-          theme: "colored",
-        }
-      );
-    }
-  };
+        </div>
+      ),
+      {
+        autoClose: false,
+        closeOnClick: false,
+        position: "top-center",
+        theme: "colored",
+      }
+    );
+    return; // مهم جداً: نوقف الدالة هون
+  }
 
+  // 2) بعدين: تأكد إن الـ profileData جاهز
+  if (!profileData) {
+    toast.error("Please wait while the profile loads.");
+    return;
+  }
+
+  // 3) إذا كلشي تمام: سوّي navigate
+  navigate(`/adbooking-request/${profileData.userId}`, {
+    state: {
+      influencerPrice: profileData.advertisingcost * 1.1,
+      influencerName: profileData.User.name,
+    },
+  });
+};
   // Social media icons (simple version)
   const getSocialIcon = (platform) => {
     switch (platform) {

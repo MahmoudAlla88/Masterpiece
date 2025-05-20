@@ -99,10 +99,10 @@ const getMessages = async (req, res) => {
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: process.env.SMTP_PORT || 465,
-    secure: true,                    // true لـ 465 – false لـ STARTTLS
+    secure: true,                
     auth: {
-      user: process.env.EMAIL_USER,   // بريدك
-      pass: process.env.EMAIL_PASS,   // كلمة السر أو App‑Password
+      user: process.env.EMAIL_USER,   
+      pass: process.env.EMAIL_PASS,   
     },
   });
 

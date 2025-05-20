@@ -18,8 +18,8 @@ dotenv.config();
 const app = express();
 const path = require('path');
 const contact=require("./routes/MessageRoutes");
-
-
+const PaymentSubscription=require("./routes/PaymentSubscription");
+const UsersubscriptionRoutes = require('./routes/userSubscriptionPlanRoutes');
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -56,12 +56,14 @@ app.use(express.json());
 //auth middlware
 app.use('/user',UserRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/subscriptions/user', UsersubscriptionRoutes);
 app.use('/api/influencer', influencerRoutes);
 app.use('/auth',authRoutes);
 app.use('/api',contact)
 app.use('/api',InfluencerAdRequest)
 app.use('/api',external)
 app.use('/api/users', bookingRoutes);
+app.use('/api', PaymentSubscription);
 // const PORT = process.env.PORT || 5000;
 // app.listen(PORT, () => {
 //   console.log(`Server is running on port ${PORT}`);    

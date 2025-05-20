@@ -413,6 +413,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import {  toast } from 'react-toastify'; 
+
 const UsersManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -812,11 +813,30 @@ const UsersManagement = () => {
                 <div className="p-4">
                   <div className="flex items-center mb-4">
                     <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-purple-100">
-                      <img
-                        src={user.image}
-                        alt={user.name}
-                        className="h-full w-full object-cover"
-                      />
+                   {user.image ? (
+                              <img
+                                src={`http://localhost:4000${user.image}`}
+                                alt={user.name}
+                                className="h-10 w-10 rounded-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.onerror = null;
+                                  e.currentTarget.src = "/icons/user.svg";
+                                }}
+                              />
+                            ) : (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-10 w-10 rounded-full text-gray-400 bg-gray-200 p-2"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            )}
                     </div>
                     <div className="ml-4">
                       <h3 className="text-lg font-medium text-gray-900">{user.name}</h3>

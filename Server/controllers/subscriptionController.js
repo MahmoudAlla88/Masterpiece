@@ -1,7 +1,7 @@
 const { Op } = require('sequelize');
 const subscription_plans = require('../models/subscriptionPlan');
 
-// إنشاء اشتراك
+
 async function createPlan(req, res) {
   try {
     const { title, price, monthly_duration, description, features } = req.body;
@@ -15,7 +15,7 @@ async function createPlan(req, res) {
       price,
       monthly_duration,
       description,
-      features,  // تأكد أن الميزات تُرسل بشكل صحيح
+      features,  
     });
 
     return res.status(201).json(newPlan);
@@ -27,12 +27,12 @@ async function createPlan(req, res) {
 
 
 
-// جلب كل الاشتراكات (غير المحذوفة)
+
 async function getPlans(req, res) {
   try {
     const plans = await subscription_plans.findAll({
       where: {
-        deletedAt: null // Assuming deletedAt is set to null if not deleted
+        deletedAt: null 
       },
   });
     return res.json(plans);
@@ -42,7 +42,7 @@ async function getPlans(req, res) {
   }
 }
 
-// جلب اشتراك محدّد بالمعرف
+
 async function getPlanById(req, res) {
   try {
     const { id } = req.params;
@@ -57,7 +57,7 @@ async function getPlanById(req, res) {
   }
 }
 
-// تحديث اشتراك
+
 async function updatePlan(req, res) {
   try {
     const { id } = req.params;
@@ -87,7 +87,7 @@ async function updatePlan(req, res) {
 }
 
 
-// حذف ناعم
+
 async function softDeletePlan(req, res) {
   try {
     const { id } = req.params;
@@ -97,13 +97,13 @@ async function softDeletePlan(req, res) {
       return res.status(400).json({ error: 'ID is required for soft delete' });
     }
 
-    // تحقق من وجود الخطة
+   
     const plan = await subscription_plans.findByPk(id);
     if (!plan) {
       return res.status(404).json({ error: 'Plan not found' });
     }
 
-    // إذا كان paranoid: true مفعلاً، سيتم تعيين deletedAt بدلاً من الحذف الفعلي
+    
     await plan.destroy();
 
     return res.json({ message: 'Plan soft-deleted successfully' });
@@ -116,12 +116,12 @@ async function softDeletePlan(req, res) {
 
 async function getDeletedPlans(req, res) {
   try {
-    // تأكد من أنك تستخدم `paranoid: false` للوصول إلى الخطط المحذوفة
+   
     const deletedPlans = await subscription_plans.findAll({
       where: {
-        deletedAt: { [Op.ne]: null }  // تأكد من أن `deletedAt` ليس null
+        deletedAt: { [Op.ne]: null }  
       },
-      paranoid: false,  // سيتيح لك الوصول إلى السجلات المحذوفة
+      paranoid: false,  
     });
 
     return res.json(deletedPlans);
@@ -145,7 +145,7 @@ const restorePlan = async (req, res) => {
 
    
     await plan.restore(); 
-    // plan.deletedAt = null;
+   
 
     const restoredPlan = await subscription_plans.findByPk(planId);
     return res.json(restoredPlan);

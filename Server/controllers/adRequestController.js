@@ -62,50 +62,7 @@ exports.updateAdRequestStatus = async (req, res) => {
 
 
  
-// const scheduleAd = async (req, res) => {
-//   try {
-//     const { requestId } = req.params;
-//     const { scheduledDate, scheduledTime } = req.body;
-//     const influencerId = req.user.id;
 
-//     // التحقق من وجود الطلب
-//     const adRequest = await AdRequest.findByPk(requestId);
-//     if (!adRequest) {
-//       return res.status(404).json({ message: 'الطلب غير موجود' });
-//     }
-
-//     // التحقق من ملكية المؤثر للطلب
-//     if (adRequest.influencerId !== influencerId) {
-//       return res.status(403).json({ message: 'غير مصرح لك بجدولة هذا الطلب' });
-//     }
-
-//     // التحقق من أن الحالة "مقبول"
-//     if (adRequest.status !== 'accepted') {
-//       return res.status(400).json({ message: 'يمكن جدولة الطلبات المقبولة فقط' });
-//     }
-
-//     // التحقق من وجود التاريخ والوقت
-//     if (!scheduledDate || !scheduledTime) {
-//       return res.status(400).json({ message: 'يرجى تحديد التاريخ والوقت' });
-//     }
-
-//     // تحديث الجدولة
-//     adRequest.scheduledDate = scheduledDate;
-//     adRequest.scheduledTime = scheduledTime;
-//     await adRequest.save();
-
-//     res.status(200).json({ message: 'تمت جدولة الإعلان بنجاح', adRequest });
-//   } catch (error) {
-//     console.error('خطأ في جدولة الإعلان:', error);
-//     res.status(500).json({ message: 'حدث خطأ أثناء الجدولة' });
-//   }
-// };
-
-// module.exports = {
-//   // الدوال الأخرى
-//   scheduleAd,
-// };
-  
 
 exports.scheduleAd = async (req, res) => {
   try {

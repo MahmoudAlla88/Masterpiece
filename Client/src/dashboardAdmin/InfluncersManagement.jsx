@@ -311,6 +311,9 @@
 // };
 
 // export default InfluencersManagement;
+
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
@@ -385,7 +388,7 @@ const InfluencersManagement = () => {
       console.error("Error approving influencer:", error);
     }
   };
-  
+
   const handleReject = async (id) => {
     try {
       const response = await axios.put(`http://localhost:4000/api/influencer/${id}/status`, {
@@ -410,26 +413,12 @@ const InfluencersManagement = () => {
       console.error("Error rejecting influencer:", error);
     }
   };
-  // const handleReject = async (id, reason = 'Content doesn\'t align with our platform guidelines') => {
-  //   try {
-  //     const response = await axios.put(`http://localhost:4000/api/influencer/${id}/reject`, { reason });
-  //     setInfluencers(prevInfluencers =>
-  //       prevInfluencers.map(influencer =>
-  //         influencer.user.id === id ? { 
-  //           ...influencer, 
-  //           user: {
-  //             ...influencer.user,
-  //             adminApproved: 'rejected',
-  //             updatedAt: response.data.user.updatedAt,
-  //           }
-  //         } : influencer
-  //       )
-  //     );
-  //   } catch (error) {
-  //     console.error("Error rejecting influencer:", error);
-  //   }
-  // };
 
+ 
+  useEffect(() => {
+    handleApprove();
+    handleReject();
+},[])
   const filteredInfluencers = influencers.filter(influencer => {
     if (statusFilter !== 'all' && influencer.user.adminApproved !== statusFilter) {
       return false;
@@ -523,10 +512,10 @@ return (
         >
           Card View
         </button>
-        <button className="flex items-center px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors">
+        {/* <button className="flex items-center px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors">
           <Download size={16} className="mr-1" />
           Export
-        </button>
+        </button> */}
       </div>
     </div>
 

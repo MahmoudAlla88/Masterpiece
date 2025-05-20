@@ -20,7 +20,7 @@ exports.sendInfluencersAndBrand = async (req, res) => {
 
     console.log("brand==========", brand);
 
-    // جلب كل المؤثرين
+   
     const influencers = await Influencer.findAll({
       include: {
         model: User,
@@ -35,7 +35,7 @@ exports.sendInfluencersAndBrand = async (req, res) => {
       }
     });
   
-    // بناء البيانات لإرسالها إلى الـ API
+   
     const requestBody = {
       brand: {
         id: brand.id,
@@ -63,7 +63,7 @@ exports.sendInfluencersAndBrand = async (req, res) => {
 
     console.log("requestBody=", requestBody);
 
-    // إرسال البيانات إلى الـ API الخارجية
+    
     const response = await axios.post('http://136.243.72.107:8000/choose-influencer', requestBody);
 
     console.log("response.data=", response.data);

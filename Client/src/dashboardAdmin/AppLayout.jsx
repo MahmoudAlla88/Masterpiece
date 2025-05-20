@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import axios from 'axios';
 import AdBookings from './AdBookings';
+import UserSubscription from './UserSubscription';
 
 
 const AppLayout = () => {
@@ -49,6 +50,8 @@ const AppLayout = () => {
           <Route path="/Subscription" element={<SubscriptionCardForm />} />
           <Route path="/user" element={<UsersManagement/>} />
           <Route path="/AdBookings" element={<AdBookings/>} />
+          <Route path="/userSubscription" element={<UserSubscription/>} />
+       
         </Routes>
       </div>
     </div>

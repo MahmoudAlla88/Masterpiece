@@ -1,181 +1,16 @@
-// import React, { useState } from 'react';
-// import axios from 'axios';
 
-// const AdRequestBooking = () => {
-    
-//   const [influencerId, setInfluencerId] = useState('');
-//   const [campaignTitle, setCampaignTitle] = useState('');
-//   const [brief, setBrief] = useState('');
-//   const [platform, setPlatform] = useState('instagram');
-//   const [contentType, setContentType] = useState('reel');
-//   const [proposedPrice, setProposedPrice] = useState('');
-//   const [requestedDate, setRequestedDate] = useState('');
-//   const [loading, setLoading] = useState(false);
-//   const [errorMessage, setErrorMessage] = useState('');
-//   const [successMessage, setSuccessMessage] = useState('');
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setLoading(true);
-//     setErrorMessage('');
-//     setSuccessMessage('');
-
-//     try {
-//       const response = await axios.post(
-//         'http://localhost:5000/api/users/request-ad',  // تأكد من المسار الصحيح للـ backend
-//         {
-//           influencerId,
-//           campaignTitle,
-//           brief,
-//           platform,
-//           contentType,
-//           proposedPrice,
-//           requestedDate,
-//         },
-//         {
-//           headers: {
-//             Authorization: `Bearer ${localStorage.getItem('token')}`,  // إضافة token إذا كان موجود
-//           },
-//         }
-//       );
-//       setSuccessMessage('تم إرسال طلب الإعلان بنجاح');
-//     } catch (error) {
-//       setErrorMessage('حدث خطأ أثناء إرسال الطلب');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="max-w-4xl mx-auto my-8 p-6 bg-white rounded-lg shadow-lg">
-//       <h2 className="text-2xl font-semibold mb-4">طلب إعلان من مؤثّر</h2>
-      
-//       {errorMessage && (
-//         <div className="mb-4 text-red-600">{errorMessage}</div>
-//       )}
-//       {successMessage && (
-//         <div className="mb-4 text-green-600">{successMessage}</div>
-//       )}
-
-//       <form onSubmit={handleSubmit}>
-      
-
-//         <div className="mb-4">
-//           <label className="block text-sm font-medium text-gray-700" htmlFor="campaignTitle">
-//             عنوان الحملة
-//           </label>
-//           <input
-//             id="campaignTitle"
-//             type="text"
-//             value={campaignTitle}
-//             onChange={(e) => setCampaignTitle(e.target.value)}
-//             className="w-full p-3 mt-2 border border-gray-300 rounded-md"
-//             required
-//           />
-//         </div>
-
-//         <div className="mb-4">
-//           <label className="block text-sm font-medium text-gray-700" htmlFor="brief">
-//             وصف الحملة
-//           </label>
-//           <textarea
-//             id="brief"
-//             value={brief}
-//             onChange={(e) => setBrief(e.target.value)}
-//             className="w-full p-3 mt-2 border border-gray-300 rounded-md"
-//             required
-//           />
-//         </div>
-
-//         <div className="mb-4">
-//           <label className="block text-sm font-medium text-gray-700" htmlFor="platform">
-//             المنصّة المستهدفة
-//           </label>
-//           <select
-//             id="platform"
-//             value={platform}
-//             onChange={(e) => setPlatform(e.target.value)}
-//             className="w-full p-3 mt-2 border border-gray-300 rounded-md"
-//             required
-//           >
-//             <option value="instagram">Instagram</option>
-//             <option value="tiktok">TikTok</option>
-//             <option value="youtube">YouTube</option>
-//             <option value="facebook">Facebook</option>
-//             <option value="other">أخرى</option>
-//           </select>
-//         </div>
-
-//         <div className="mb-4">
-//           <label className="block text-sm font-medium text-gray-700" htmlFor="contentType">
-//             نوع المحتوى
-//           </label>
-//           <select
-//             id="contentType"
-//             value={contentType}
-//             onChange={(e) => setContentType(e.target.value)}
-//             className="w-full p-3 mt-2 border border-gray-300 rounded-md"
-//             required
-//           >
-//             <option value="post">منشور</option>
-//             <option value="story">ستوري</option>
-//             <option value="reel">ريل</option>
-//             <option value="video">فيديو</option>
-//             <option value="blog">مدونة</option>
-//           </select>
-//         </div>
-
-//         <div className="mb-4">
-//           <label className="block text-sm font-medium text-gray-700" htmlFor="proposedPrice">
-//             السعر المقترح
-//           </label>
-//           <input
-//             id="proposedPrice"
-//             type="number"
-//             value={proposedPrice}
-//             onChange={(e) => setProposedPrice(e.target.value)}
-//             className="w-full p-3 mt-2 border border-gray-300 rounded-md"
-//             required
-//           />
-//         </div>
-
-//         <div className="mb-4">
-//           <label className="block text-sm font-medium text-gray-700" htmlFor="requestedDate">
-//             التاريخ المطلوب للنشر
-//           </label>
-//           <input
-//             id="requestedDate"
-//             type="datetime-local"
-//             value={requestedDate}
-//             onChange={(e) => setRequestedDate(e.target.value)}
-//             className="w-full p-3 mt-2 border border-gray-300 rounded-md"
-//             required
-//           />
-//         </div>
-
-//         <button
-//           type="submit"
-//           className={`w-full p-3 mt-4 bg-blue-600 text-white rounded-md ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-//           disabled={loading}
-//         >
-//           {loading ? 'جاري إرسال الطلب...' : 'إرسال الطلب'}
-//         </button>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default AdRequestBooking;
-
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';  
 import {  toast } from 'react-toastify'; 
-
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 export default function AdRequestBooking() {
   const location = useLocation();
+  
   const influencerPrice = parseFloat(location.state?.influencerPrice || 0);
  const influncerName=location.state?.influncerName;
  console.log(influncerName);
@@ -194,37 +29,42 @@ export default function AdRequestBooking() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+ const [bookedSlots, setBookedSlots] = useState([]);
+ useEffect(() => {
+    const fetchBookedSlots = async () => {
+      try {
+        const response = await axios.get(`http://localhost:4000/api/users/influencers/${id}/booked-slots`, {
+          params: { start: new Date().toISOString(), end: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString() }
+        });
+            const formattedBookedSlots = response.data.map((slot) => {
+          const start = new Date(slot.startTime);
+          const end = new Date(slot.endTime);
 
+          return { start, end };
+        });
+        setBookedSlots(formattedBookedSlots); 
+        console.log("date",formattedBookedSlots);
+      } catch (err) {
+        toast.error('حدث خطأ أثناء جلب المواعيد المحجوزة');
+      }
+    };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   setErrorMessage('');
-  //   setSuccessMessage('');
+    fetchBookedSlots();
+  }, [id]);
+const getExcludedTimes = (bookedSlots) => {
+    const excludedTimes = [];
 
-  //   try {
-  //     const response = await axios.post(
-  //       'http://localhost:4000/api/users/request-ad',  
-  //       {
-  //        userId: currentUser?.id,
-  //         influencerId:id,
-  //         campaignTitle,
-  //         brief,
-  //         platform,
-  //         contentType,
-  //         proposedPrice,
-  //         requestedDate,
-  //       }
-  //     );
-  //     setSuccessMessage('The advertisement request was successfully sent.');
-  //     toast.success('The advertisement request was successfully sent.');
-  //   } catch (error) {
-  //     setErrorMessage('An error occurred while sending the request.');
-  //     toast.error('An error occurred while sending the request.');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+    bookedSlots.forEach((slot) => {
+      let currentTime = new Date(slot.start);
+      while (currentTime <= slot.end) {
+        excludedTimes.push(new Date(currentTime)); 
+        currentTime.setMinutes(currentTime.getMinutes() + 1);  
+      }
+    });
+
+    return excludedTimes;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setErrorMessage('');
@@ -247,9 +87,10 @@ export default function AdRequestBooking() {
     navigate('/payment', { state: payload });
   };
   return (
+    <div  className="bg-gradient-to-br from-blue-50 to-purple-100 w-[100%] p-10 flex-grow">
     <div className="max-w-4xl mx-auto my-8 p-6 bg-white rounded-lg shadow-lg">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-black">Influencer Advertisement Booking</h1>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-[#D63384] bg-clip-text text-transparent">Influencer Advertisement Booking</h1>
         <p className="text-gray-600 mt-2">Complete the form below to request promotional content from your selected influencer</p>
       </div>
       
@@ -346,9 +187,9 @@ export default function AdRequestBooking() {
             <input
         id="proposedPrice"
         type="number"
-        // ربط القيمة مباشرةً بـ influencerPrice
+        
         value={influencerPrice}
-        // منع المستخدم من تعديلها
+  
         readOnly
         className="w-full p-3 pl-10 border border-gray-300 rounded-md bg-gray-100 focus:ring-2 focus:ring-purple-300 focus:border-purple-500 outline-none transition"
         placeholder="0.00"
@@ -359,19 +200,43 @@ export default function AdRequestBooking() {
             <p className="text-xs text-gray-500 mt-1">Enter your budget in Jordanian Dinars</p>
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="requestedDate">
               Requested Publish Date <span className="text-red-500">*</span>
             </label>
-            <input
+            {/* <input
               id="requestedDate"
               type="datetime-local"
+              min={new Date().toISOString().slice(0, 16)}  
               value={requestedDate}
               onChange={(e) => setRequestedDate(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-300 focus:border-purple-500 outline-none transition"
               required
-            />
-            <p className="text-xs text-gray-500 mt-1">Select your preferred publishing date and time</p>
+            /> */}
+               {/* حقل الـ DatePicker مع استبعاد المواعيد المحجوزة */}
+               
+       <DatePicker
+        id="requestedDate"
+        selected={requestedDate}
+        onChange={(date) => setRequestedDate(date)}  // تحديث التاريخ عند تغييره
+        showTimeSelect
+        minDate={new Date()}  // منع اختيار تواريخ ماضية
+        excludeTimes={getExcludedTimes(bookedSlots)}  // استبعاد الأوقات بين start و end
+        dateFormat="Pp"  // تنسيق عرض التاريخ والوقت
+        placeholderText="Select a date and time"  // النص الافتراضي في الـ input
+        required
+        className="w-full p-3 pl-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-300 focus:border-purple-500 outline-none transition"  // تخصيص التصميم
+
+      />
+            <p className="text-xs text-gray-500 mt-1">Select your preferred publishing date and time</p> 
+              {/* <DatePicker
+        selected={requestedDate}
+        onChange={(date) => setRequestedDate(date)}
+        showTimeSelect
+        minDate={new Date()}
+        excludeTimes={bookedSlots.map(d => new Date(d))}
+        dateFormat="Pp"
+      /> */}
           </div>
         </div>
 
@@ -388,6 +253,6 @@ export default function AdRequestBooking() {
           </p>
         </div>
       </form>
-    </div>
+    </div></div>
   );
 }

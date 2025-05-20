@@ -1,13 +1,53 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User'); 
+const Joi = require('joi');
 
-
+const signupSchema = Joi.object({
+  name: Joi.string()
+    .pattern(/^[A-Za-z\s]+$/)
+    .required()
+    .messages({
+      'string.empty': 'Name is required',
+      'string.pattern.base': 'Name must contain only letters and spaces'
+    }),
+  phone: Joi.string()
+    .min(9)
+    .required()
+    .messages({
+      'string.empty': 'Phone number is required',
+      'string.pattern.base': 'Phone number must contain digits only',
+      'string.min': 'Phone number must be at least 9 digits long'
+    }),
+  location: Joi.string().allow('', null),
+  email: Joi.string()
+    .email({ tlds: { allow: false } })
+    .required()
+    .messages({
+      'string.empty': 'Email is required',
+      'string.email': 'Email must be a valid email address'
+    }),
+  password: Joi.string()
+    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[\d\W]).+$/)
+    .required()
+    .messages({
+      'string.empty': 'Password is required',
+      'string.pattern.base': 'Password must contain at least one uppercase letter, one lowercase letter, and a number or symbol'
+    })
+});
 exports.signup = async (req, res) => {
   try {
-    const { name, phone, location, email, password } = req.body;  // Ensure email is included
+    const { name, phone, location, email, password } = req.body;  
 
-    // Check if the phone number or email already exists in the database
+    const { error, value } = signupSchema.validate(req.body, { abortEarly: false });
+    if (error) {
+    
+      const messages = error.details.map(d => d.message);
+      return res.status(400).json({ message: messages.join(', ') });
+    }
+  
+
+    
     const existingUserByPhone = await User.findOne({ where: { phone } });
     const existingUserByEmail = await User.findOne({ where: { email } });
     
@@ -18,31 +58,31 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ message: 'Email is already in use' });
     }
 
-    // Hash the password before saving the user
+    
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the new user in the database
+
     const newUser = await User.create({
       name,
       phone,
-      email,           // Ensure email is passed to the database
+      email,           
       password: hashedPassword,
     });
 
-    // Create a JWT token for the new user
+  
     const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET || 'mysecretkey', {
       expiresIn: '1d',
     });
 
-    // Set the JWT token in an HTTP-only cookie
+    
     res.cookie('token', token, {
       httpOnly: true,
-      secure: false,          // Set to true in production with HTTPS
-      sameSite: 'strict',     // Cookie sharing policy
-      maxAge: 24 * 60 * 60 * 1000, // 1 day expiry
+      secure: false,         
+      sameSite: 'strict',  
+      maxAge: 24 * 60 * 60 * 1000, 
     });
 
-    // Respond with user data and the generated token
+   
     return res.status(201).json({
       message: 'User created successfully',
       user: {
@@ -50,7 +90,7 @@ exports.signup = async (req, res) => {
         name: newUser.name,
         phone: newUser.phone,
         location: newUser.location,
-        email: newUser.email,  // Include email in the response
+        email: newUser.email, 
         role: newUser.role,
         adminApproved: newUser.adminApproved,
       },
@@ -115,7 +155,7 @@ exports.signup = async (req, res) => {
   exports.getAllUsers = async (req, res) => {
     try {
       const users = await User.findAll({
-        attributes: ['id', 'name', 'email', 'phone', 'location', 'image', 'role'], // تحديد الحقول المراد استرجاعها
+        attributes: ['id', 'name', 'email', 'phone', 'location', 'image', 'role'], 
      
       });
       res.status(200).json({
@@ -138,7 +178,7 @@ exports.signup = async (req, res) => {
   
  
     try {
-      // destroy ترجع عدد الصفوف المحذوفة
+      
       const deletedRows = await User.findByPk(id);
       if (!deletedRows) {
         return res.status(404).json({ error: 'User not found' });
@@ -146,7 +186,7 @@ exports.signup = async (req, res) => {
   
       await deletedRows.destroy();
   
-      // 204 = No Content
+   
       return res.sendStatus(204);
     } catch (err) {
       console.error(err);
@@ -158,19 +198,19 @@ exports.signup = async (req, res) => {
     const { id } = req.params;
   
     try {
-      // 1) ابحث عن المستخدم ضمن السجلات المحذوفة
+     
       const user = await User.findByPk(id, { paranoid: false });
       if (!user) {
         return res.status(404).json({ error: 'User not found (even in trash)' });
       }
   
-      // 2) إذا لم يكن محذوفًا أصلاً
+     
       if (user.deletedAt === null) {
         return res.status(400).json({ error: 'User is already active' });
       }
   
-      // 3) قم بالاسترجاع
-      await user.restore();               // ← أو: await User.restore({ where: { id } });
+     
+      await user.restore();              
   
       return res.status(200).json({ message: 'User restored successfully' });
     } catch (err) {

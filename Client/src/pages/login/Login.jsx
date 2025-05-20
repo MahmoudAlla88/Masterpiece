@@ -29,13 +29,18 @@ const handleChange = (e) => {
     [name]: value,
   }));
 };
-const redirectByRole = (role) => {
+const redirectByRole = (role,adminApproved) => {
   switch (role) {
     case "admin":
       navigate("/dashboard");
       break;
     case "influencer":
+      if(adminApproved=="approved")
       navigate("/dashboardInfluncer");
+    else if(adminApproved=="rejected")
+        toast.error('Your influencer request has been rejected.');
+      else
+      toast.info('Your influencer request is still pending approval.');
       break;
     default:
       navigate("/");
@@ -50,7 +55,8 @@ const loadUser = async () => {
   );
   console.log(user.role);
   dispatch(setCurrentUser(user));
-  redirectByRole(user.role);   
+  
+  redirectByRole(user.role,user.adminApproved);   
 };
 const toggleRegister = () => {
  

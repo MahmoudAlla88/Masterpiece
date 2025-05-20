@@ -5,30 +5,33 @@ import AdRequests from './AdRequests';
 import SchedulePage from './SchedulePage';
 import { useEffect } from 'react';
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import OverviewPage from './OverviewPage';
+import PricingPage from '../pages/payment/Pricing';
+import InfluencerProfile from './Profile';
 
 
 
 
 const AppLayoutInfluncer = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
+// const currentUser = useSelector((state) => state.user.currentUser);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await axios.get("http://localhost:4000/user/me", {
-          withCredentials: true
-        });
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
+  //       const res = await axios.get("http://localhost:4000/user/me", {
+  //         withCredentials: true
+  //       });
        
-        dispatch(setCurrentUser(res.data));
-      } catch (err) {
-        console.log("User not logged in", err);
-      }
-    };
+  //       dispatch(setCurrentUser(res.data));
+  //     } catch (err) {
+  //       console.log("User not logged in", err);
+  //     }
+  //   };
 
-    fetchUser();
-  }, []);
+  //   fetchUser();
+  // }, []);
   return (
     <div className="flex h-screen w-full overflow-hidden">
       {/* Sidebar on the left */}
@@ -42,6 +45,8 @@ const AppLayoutInfluncer = () => {
           <Route path="/ad-requests" element={<AdRequests/>} />
           <Route path="/calendar" element={<SchedulePage/>} />
           <Route path="/" element={<OverviewPage />} />
+           <Route path="/pricing" element={<PricingPage/>} />
+               <Route path="/profile/:id" element={<InfluencerProfile/>} />
           {/* <Route path="/influencers" element={<InfluencersManagement />} />
           <Route path="/Analytics" element={<Analytics />} />
           <Route path="/Subscription" element={<SubscriptionCardForm />} /> */}

@@ -55,7 +55,7 @@ const User = sequelize.define('User', {
     allowNull: true 
   },
   subscriptionexpiry: { 
-  type: DataTypes.STRING,
+  type: DataTypes.DATE,
   allowNull: true },
 }
 , 

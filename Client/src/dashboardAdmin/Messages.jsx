@@ -1,502 +1,4 @@
-// // // // import React, { useState } from 'react';
 
-// // // // const Messages = () => {
-// // // //   // Sample data - replace with your actual data
-// // // //   const [messages, setMessages] = useState([
-// // // //     { id: 1, name: "Ahmed Mohamed", email: "ahmed@example.com", message: "Hello, I would like to inquire about therapeutic massage services", read: false },
-// // // //     { id: 2, name: "Sara Khaled", email: "sara@example.com", message: "Do you have any special offers this week?", read: false },
-// // // //     { id: 3, name: "Mohamed Ali", email: "mohamed@example.com", message: "I would like to book an appointment for next Thursday", read: true },
-// // // //     { id: 4, name: "Noor Ahmed", email: "noor@example.com", message: "What are the prices for the sessions?", read: false },
-// // // //     { id: 5, name: "Khaled Said", email: "khaled@example.com", message: "Thank you for the excellent service on my last visit", read: true },
-// // // //   ]);
-
-// // // //   const [filter, setFilter] = useState('');
-// // // //   const [filterReadStatus, setFilterReadStatus] = useState('all');
-
-// // // //   // Function to mark message as read
-// // // //   const markAsRead = (id) => {
-// // // //     setMessages(messages.map(message => 
-// // // //       message.id === id ? { ...message, read: true } : message
-// // // //     ));
-// // // //   };
-
-// // // //   // Filter messages based on search query and read status
-// // // //   const filteredMessages = messages.filter(msg => {
-// // // //     const matchesSearch = msg.message.toLowerCase().includes(filter.toLowerCase());
-// // // //     const matchesReadStatus = filterReadStatus === 'all' || (filterReadStatus === 'read' && msg.read) || (filterReadStatus === 'unread' && !msg.read);
-// // // //     return matchesSearch && matchesReadStatus;
-// // // //   });
-
-// // // //   return (
-// // // //     <div className="flex flex-row-reverse">
-  
-
-// // // //       {/* Main Content Area */}
-// // // //       <div className="w-4/4 p-4 bg-white rounded-lg shadow-lg">
-// // // //         <h2 className="text-2xl font-bold mb-6 text-left text-purple-800">Messages</h2>
-
-// // // //         {/* Filter Section */}
-// // // //         <div className="mb-4 flex justify-between items-center">
-// // // //           <div className="flex space-x-4">
-// // // //             {/* Search Filter */}
-// // // //             <input 
-// // // //               type="text" 
-// // // //               className="p-2 border rounded-lg w-64"
-// // // //               placeholder="Search messages..."
-// // // //               value={filter}
-// // // //               onChange={(e) => setFilter(e.target.value)} 
-// // // //             />
-
-// // // //             {/* Read Status Filter */}
-// // // //             <select 
-// // // //               className="p-2 border rounded-lg"
-// // // //               value={filterReadStatus}
-// // // //               onChange={(e) => setFilterReadStatus(e.target.value)}
-// // // //             >
-// // // //               <option value="all">All</option>
-// // // //               <option value="read">Read</option>
-// // // //               <option value="unread">Unread</option>
-// // // //             </select>
-// // // //           </div>
-
-// // // //           <span className="font-semibold text-purple-500">
-// // // //             {filteredMessages.length} Messages Found
-// // // //           </span>
-// // // //         </div>
-
-// // // //         {/* Message List */}
-// // // //         <div className="space-y-3">
-// // // //           {filteredMessages.map(msg => (
-// // // //             <div 
-// // // //               key={msg.id}
-// // // //               className={`p-4 rounded-lg border cursor-pointer ${msg.read ? 'bg-purple-200' : 'bg-gradient-to-r from-purple-500 to-pink-500 border-purple-300'}`}
-// // // //               onClick={() => markAsRead(msg.id)}
-// // // //             >
-// // // //               <div className="flex justify-between items-start">
-// // // //               <div className="text-left">
-// // // //                   <h3 className="font-bold text-lg text-purple-800">{msg.name}</h3>
-// // // //                   <p className="text-gray-600 text-sm">{msg.email}</p>
-// // // //                 </div>
-// // // //                 <div className="flex items-center">
-// // // //                   {!msg.read && (
-// // // //                     <span className="h-2 w-2 bg-purple-500 rounded-full mr-2"></span>
-// // // //                   )}
-// // // //                 </div>
-               
-// // // //               </div>
-// // // //               <p className="mt-2 text-gray-800 text-left">{msg.message}</p>
-// // // //               <div className="mt-2 text-xs text-gray-500 text-left">
-// // // //                 {msg.read ? 'Read' : 'Unread'}
-// // // //               </div>
-// // // //             </div>
-// // // //           ))}
-// // // //         </div>
-// // // //       </div>
-// // // //     </div>
-// // // //   );
-// // // // };
-
-// // // // export default Messages;
-// // // import React, { useEffect, useState } from 'react';
-// // // import axios from 'axios';
-
-// // // const Messages = () => {
-// // //   const [messages, setMessages] = useState([]);
-// // //   const [filter, setFilter] = useState('');
-// // //   const [filterReadStatus, setFilterReadStatus] = useState('all');
-// // //   const [loading, setLoading] = useState(true);
-// // //   const [error, setError] = useState(null);
-
-// // //   // جلب الرسائل بناءً على حالة القراءة
-// // //   useEffect(() => {
-// // //     const fetchMessages = async () => {
-// // //       try {
-// // //         // إرسال طلب إلى الـ API باستخدام حالة القراءة
-// // //         const response = await axios.get(
-// // //           `http://localhost:4000/api/contact/getMessagesByReadStatus?status=${filterReadStatus}`
-// // //         );
-
-// // //         // تحديث الرسائل
-// // //         setMessages(response.data);
-// // //         setLoading(false);
-// // //       } catch (error) {
-// // //         setError('Failed to load messages.');
-// // //         setLoading(false);
-// // //       }
-// // //     };
-
-// // //     fetchMessages();
-// // //   }, [filterReadStatus]); // يتم التحديث عندما يتغير filterReadStatus
-
-// // //   // وظيفة لتحديث حالة القراءة
-// // //   const markAsRead = (id) => {
-// // //     setMessages(
-// // //       messages.map((message) =>
-// // //         message.contact_id === id ? { ...message, read: true } : message
-// // //       )
-// // //     );
-// // //   };
-
-// // //   // تصفية الرسائل بناءً على البحث
-// // //   const filteredMessages = messages.filter((msg) => {
-// // //     return msg.message.toLowerCase().includes(filter.toLowerCase());
-// // //   });
-
-// // //   if (loading) {
-// // //     return <div>Loading...</div>;
-// // //   }
-
-// // //   if (error) {
-// // //     return <div>{error}</div>;
-// // //   }
-
-// // //   return (
-// // //     <div className="flex flex-row-reverse">
-// // //       {/* Main Content Area */}
-// // //       <div className="w-full p-4 bg-white rounded-lg shadow-lg">
-// // //         <h2 className="text-2xl font-bold mb-6 text-left text-purple-800">Messages</h2>
-
-// // //         {/* Filter Section */}
-// // //         <div className="mb-4 flex justify-between items-center">
-// // //           <div className="flex space-x-4">
-// // //             {/* Search Filter */}
-// // //             <input
-// // //               type="text"
-// // //               className="p-2 border rounded-lg w-64"
-// // //               placeholder="Search messages..."
-// // //               value={filter}
-// // //               onChange={(e) => setFilter(e.target.value)}
-// // //             />
-
-// // //             {/* Read Status Filter */}
-// // //             <select
-// // //               className="p-2 border rounded-lg"
-// // //               value={filterReadStatus}
-// // //               onChange={(e) => setFilterReadStatus(e.target.value)}
-// // //             >
-// // //               <option value="all">All</option>
-// // //               <option value="read">Read</option>
-// // //               <option value="unread">Unread</option>
-// // //             </select>
-// // //           </div>
-
-// // //           <span className="font-semibold text-purple-500">
-// // //             {filteredMessages.length} Messages Found
-// // //           </span>
-// // //         </div>
-
-// // //         {/* Message List */}
-// // //         <div className="space-y-3">
-// // //           {filteredMessages.map((msg) => (
-// // //             <div
-// // //               key={msg.contact_id}
-// // //               className={`p-4 rounded-lg border cursor-pointer ${
-// // //                 msg.read ? 'bg-purple-200' : 'bg-gradient-to-r from-purple-500 to-pink-500 border-purple-300'
-// // //               }`}
-// // //               onClick={() => markAsRead(msg.contact_id)}
-// // //             >
-// // //               <div className="flex justify-between items-start">
-// // //                 <div className="text-left">
-// // //                   <h3 className="font-bold text-lg text-purple-800">{msg.name}</h3>
-// // //                   <p className="text-gray-600 text-sm">{msg.email}</p>
-// // //                 </div>
-// // //                 <div className="flex items-center">
-// // //                   {!msg.read && (
-// // //                     <span className="h-2 w-2 bg-purple-500 rounded-full mr-2"></span>
-// // //                   )}
-// // //                 </div>
-// // //               </div>
-// // //               <p className="mt-2 text-gray-800 text-left">{msg.message}</p>
-// // //               <div className="mt-2 text-xs text-gray-500 text-left">
-// // //                 {msg.read ? 'Read' : 'Unread'}
-// // //               </div>
-// // //             </div>
-// // //           ))}
-// // //         </div>
-// // //       </div>
-// // //     </div>
-// // //   );
-// // // };
-
-// // // export default Messages;
-// // import React, { useEffect, useState } from 'react';
-// // import axios from 'axios';
-
-// // const Messages = () => {
-// //   const [messages, setMessages] = useState([]);
-// //   const [filter, setFilter] = useState('');
-// //   const [filterReadStatus, setFilterReadStatus] = useState('all');
-// //   const [loading, setLoading] = useState(true);
-// //   const [error, setError] = useState(null);
-
-// //   // جلب الرسائل بناءً على حالة القراءة
-// //   useEffect(() => {
-  
-// //     const fetchMessages = async () => {
-// //       try {
-// //         // إرسال طلب إلى الـ API باستخدام حالة القراءة
-// //         const response = await axios.get(
-// //           `http://localhost:4000/api/contact/getMessagesByReadStatus?status=${filterReadStatus}`
-// //         );
-// //         if (response.data.message) {
-// //           setError(response.data.message); // إذا كانت الرسالة هي "No messages found"
-// //         } else {
-// //           // تحديث الرسائل
-// //           setMessages(response.data);
-// //         }
-// //         setLoading(false);
-// //       } catch (error) {
-// //         setError('Failed to load messages.');
-// //         setLoading(false);
-// //       }
-// //     };
-
-// //     fetchMessages();
-// //   }, [filterReadStatus]); // يتم التحديث عندما يتغير filterReadStatus
-
-// //   // وظيفة لتحديث حالة القراءة في الـ Backend
-// //   const markAsRead = async (id) => {
-// //     try {
-// //       // إرسال طلب PUT لتحديث حالة القراءة إلى "مقروءة" في قاعدة البيانات
-// //       await axios.put(`http://localhost:4000/api/contact/messages/${id}/read`);
-
-// //       // تحديث الرسالة في الواجهة بعد تحديثها في الـ Backend
-// //       setMessages(messages.map((message) =>
-// //         message.contact_id === id ? { ...message, read: true } : message
-
-      
-// //       ));
-     
-// //     } catch (error) {
-// //       console.error("Error marking message as read:", error);
-// //       setError("Failed to update message status.");
-// //     }
-// //   };
-
-// //   // تصفية الرسائل بناءً على البحث
-// //   const filteredMessages = messages.filter((msg) => {
-// //     return msg.message.toLowerCase().includes(filter.toLowerCase());
-// //   });
-
-// //   if (loading) {
-// //     return <div>Loading...</div>;
-// //   }
-// // function notfound(){
-// //   if (error) {
-// //     return <div>{error}</div>;
-// //   }
-// // }
-// //   return (
-// //     <div className="flex flex-row-reverse">
-// //       {/* Main Content Area */}
-// //       <div className="w-full p-4 bg-white rounded-lg shadow-lg">
-// //         <h2 className="text-2xl font-bold mb-6 text-left text-purple-800">Messages</h2>
-
-// //         {/* Filter Section */}
-// //         <div className="mb-4 flex justify-between items-center">
-// //           <div className="flex space-x-4">
-// //             {/* Search Filter */}
-// //             <input
-// //               type="text"
-// //               className="p-2 border rounded-lg w-64"
-// //               placeholder="Search messages..."
-// //               value={filter}
-// //               onChange={(e) => setFilter(e.target.value)}
-// //             />
-
-// //             {/* Read Status Filter */}
-// //             <select
-// //               className="p-2 border rounded-lg"
-// //               value={filterReadStatus}
-// //               onChange={(e) => setFilterReadStatus(e.target.value)}
-// //             >
-// //               <option value="all">All</option>
-// //               <option value="read">Read</option>
-// //               <option value="unread">Unread</option>
-// //             </select>
-// //           </div>
-
-// //           <span className="font-semibold text-purple-500">
-// //             {filteredMessages.length} Messages Found
-// //           </span>
-// //         </div>
-
-// //         {/* Message List */}
-// //         <div className="space-y-3">
-// //           {filteredMessages.map((msg) => (
-// //             <div
-// //               key={msg.contact_id}
-// //               className={`p-4 rounded-lg border cursor-pointer ${
-// //                 msg.read ? 'bg-purple-200' : 'bg-gradient-to-r from-purple-500 to-pink-500 border-purple-300'
-// //               }`}
-// //               onClick={() => markAsRead(msg.contact_id)} // عند النقر يتم تحديث حالة القراءة
-// //             >
-// //               <div className="flex justify-between items-start">
-// //                 <div className="text-left">
-// //                   <h3 className="font-bold text-lg text-purple-800">{msg.name}</h3>
-// //                   <p className="text-gray-600 text-sm">{msg.email}</p>
-// //                 </div>
-// //                 <div className="flex items-center">
-// //                   {!msg.read && (
-// //                     <span className="h-2 w-2 bg-purple-500 rounded-full mr-2"></span>
-// //                   )}
-// //                 </div>
-// //               </div>
-// //               <p className="mt-2 text-gray-800 text-left">{msg.message}</p>
-// //               <div className="mt-2 text-xs text-gray-500 text-left">
-// //                 {msg.read ? 'Read' : 'Unread'}
-// //               </div>
-// //             </div>
-// //           ))}
-// //         </div>
-// //       </div>
-// //     </div>
-// //   );
-// // };
-
-// // export default Messages;
-// import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
-
-// const Messages = () => {
-//   const [messages, setMessages] = useState([]);
-//   const [filter, setFilter] = useState('');
-//   const [filterReadStatus, setFilterReadStatus] = useState('all');
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-
-//   // جلب الرسائل بناءً على حالة القراءة
-//   useEffect(() => {
-//     const fetchMessages = async () => {
-//       try {
-//         // إرسال طلب إلى الـ API باستخدام حالة القراءة
-//         const response = await axios.get(
-//           `http://localhost:4000/api/contact/getMessagesByReadStatus?status=${filterReadStatus}`
-//         );
-
-//         // التأكد من أن الرد هو مصفوفة
-//         if (Array.isArray(response.data)) {
-//           setMessages(response.data);
-//         } else {
-//           setMessages([]); // تعيين مصفوفة فارغة في حالة عدم الحصول على مصفوفة من الـ API
-//         }
-
-//         setLoading(false);
-//       } catch (error) {
-//         setError('Failed to load messages.');
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchMessages();
-//   }, [filterReadStatus]); // يتم التحديث عندما يتغير filterReadStatus
-
-//   // وظيفة لتحديث حالة القراءة في الـ Backend
-//   const markAsRead = async (id) => {
-//     try {
-//       // إرسال طلب PUT لتحديث حالة القراءة إلى "مقروءة" في قاعدة البيانات
-//       await axios.put(`http://localhost:4000/api/contact/messages/${id}/read`);
-
-//       // بعد تحديث الحالة في الـ Backend، قم بإعادة جلب الرسائل لتحديثها في الواجهة
-//       const response = await axios.get(
-//         `http://localhost:4000/api/contact/getMessagesByReadStatus?status=${filterReadStatus}`
-//       );
-
-//       // التأكد من أن الرد هو مصفوفة
-//       if (Array.isArray(response.data)) {
-//         setMessages(response.data);
-//       }
-//     } catch (error) {
-//       console.error("Error marking message as read:", error);
-//       setError("Failed to update message status.");
-//     }
-//   };
-
-//   // تصفية الرسائل بناءً على البحث
-//   const filteredMessages = Array.isArray(messages) ? messages.filter((msg) => {
-//     return msg.message.toLowerCase().includes(filter.toLowerCase());
-//   }) : [];
-
-//   if (loading) {
-//     return <div>Loading...</div>;
-//   }
-
-//   return (
-//     <div className="flex flex-row-reverse">
-//       {/* Main Content Area */}
-//       <div className="w-full p-4 bg-white rounded-lg shadow-lg">
-//         <h2 className="text-2xl font-bold mb-6 text-left text-purple-800">Messages</h2>
-
-//         {/* Filter Section */}
-//         <div className="mb-4 flex justify-between items-center">
-//           <div className="flex space-x-4">
-//             {/* Search Filter */}
-//             <input
-//               type="text"
-//               className="p-2 border rounded-lg w-64"
-//               placeholder="Search messages..."
-//               value={filter}
-//               onChange={(e) => setFilter(e.target.value)}
-//             />
-
-//             {/* Read Status Filter */}
-//             <select
-//               className="p-2 border rounded-lg"
-//               value={filterReadStatus}
-//               onChange={(e) => setFilterReadStatus(e.target.value)}
-//             >
-//               <option value="all">All</option>
-//               <option value="read">Read</option>
-//               <option value="unread">Unread</option>
-//             </select>
-//           </div>
-
-//           <span className="font-semibold text-purple-500">
-//             {filteredMessages.length} Messages Found
-//           </span>
-//         </div>
-
-//         {/* Message List */}
-//         <div className="space-y-3">
-//           {filteredMessages.length > 0 ? (
-//             filteredMessages.map((msg) => (
-//               <div
-//                 key={msg.contact_id}
-//                 className={`p-4 rounded-lg border cursor-pointer ${
-//                   msg.read ? 'bg-purple-200' : 'bg-gradient-to-r from-purple-500 to-pink-500 border-purple-300'
-//                 }`}
-//                 onClick={() => markAsRead(msg.contact_id)} // عند النقر يتم تحديث حالة القراءة
-//               >
-//                 <div className="flex justify-between items-start">
-//                   <div className="text-left">
-//                     <h3 className="font-bold text-lg text-purple-800">{msg.name}</h3>
-//                     <p className="text-gray-600 text-sm">{msg.email}</p>
-//                   </div>
-//                   <div className="flex items-center">
-//                     {!msg.read && (
-//                       <span className="h-2 w-2 bg-purple-500 rounded-full mr-2"></span>
-//                     )}
-//                   </div>
-//                 </div>
-//                 <p className="mt-2 text-gray-800 text-left">{msg.message}</p>
-//                 <div className="mt-2 text-xs text-gray-500 text-left">
-//                   {msg.read ? 'Read' : 'Unread'}
-//                 </div>
-//               </div>
-//             ))
-//           ) : (
-//             // إذا لم تكن هناك رسائل لتصفية، يتم عرض هذه الرسالة
-//             <div className="text-center text-gray-500">
-//               No messages found based on the current filter.
-//             </div>
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Messages;
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {  toast } from 'react-toastify'; 
@@ -510,7 +12,7 @@ const Messages = () => {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [viewMode, setViewMode] = useState('table'); // 'table' or 'card'
 
-  // Fetch messages based on read status
+  
   useEffect(() => {
     const fetchMessages = async () => {
       try {
@@ -534,7 +36,7 @@ const Messages = () => {
     fetchMessages();
   }, [filterReadStatus]);
 
-  // Function to update read status in the backend
+ 
   const markAsRead = async (id) => {
     try {
       await axios.put(`http://localhost:4000/api/contact/messages/${id}/read`);
@@ -553,7 +55,7 @@ const Messages = () => {
     }
   };
 
-  // Function to reply to a message
+
   const handleReply = async (messageId) => {
     if (!replyText.trim()) return;
 
@@ -599,26 +101,30 @@ const Messages = () => {
         </div>
         
         {/* View Toggle */}
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-500">View:</span>
-          <div className="flex bg-gray-100 rounded-lg p-1">
+        <div className="flex  space-x-2">
+          {/* <span className="text-sm text-gray-500">View:</span> */}
+          {/* <div className="flex bg-gray-100 rounded-lg p-1"> */}
             <button
-              className={`px-3 py-1 rounded-md text-sm transition-colors ${
-                viewMode === 'table' ? 'bg-white shadow-sm text-purple-700' : 'text-gray-600'
-              }`}
+               className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                   viewMode === 'table' 
+              ? 'bg-purple-600 text-white' 
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
               onClick={() => setViewMode('table')}
             >
-              Table
+         Table View
             </button>
             <button
-              className={`px-3 py-1 rounded-md text-sm transition-colors ${
-                viewMode === 'card' ? 'bg-white shadow-sm text-purple-700' : 'text-gray-600'
-              }`}
+              className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                   viewMode === 'card' 
+              ? 'bg-purple-600 text-white' 
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
               onClick={() => setViewMode('card')}
             >
-              Cards
+                  Card View
             </button>
-          </div>
+          {/* </div> */}
         </div>
       </div>
 

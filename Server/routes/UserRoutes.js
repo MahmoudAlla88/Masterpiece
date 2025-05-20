@@ -28,6 +28,8 @@ router.get("/me", authMiddleware, async (req, res) => {
         "image",
         "role",
         "adminApproved",
+        "subscriptionplan",
+        "subscriptionexpiry"
       ],
     });
 console.log(user);

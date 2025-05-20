@@ -26,6 +26,8 @@ import ProfilePage from './pages/profile/profile';
 import AdRequestBooking from './pages/influncerPage/AdRequestBooking';
 import UserBookings from './pages/profile/UserBookings';
 import PaymentPage from './pages/payment/Payment';
+import PaymentPagePlan from './pages/payment/planPayment';
+import UserPricing from './pages/payment/UserPricing';
 function App() {
   const location = useLocation();
 
@@ -50,7 +52,7 @@ function App() {
 
   return (
     <>
-          {location.pathname !== "/login" && !location.pathname.startsWith("/dashboard") && <Navbar />}
+    {location.pathname !== "/login" && !location.pathname.startsWith("/dashboard") && !location.pathname.startsWith("/Paymentpricing") && <Navbar />}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home/>} />
@@ -58,6 +60,7 @@ function App() {
         <Route path="/AboutUs" element={<AboutUs/>} />
         <Route path="/ContactUs" element={<ContactUs/>} />
         <Route path="/Pricing" element={<PricingPage/>} />
+        <Route path="/PricingPage" element={<UserPricing/>} />
         <Route path="/InfluencersPage" element={<InfluencersList/>} />
         <Route path="/InfluencerForm" element={<InfluencerRegistrationForm />} />
         <Route path="/InfluencerProfile/:id" element={<InfluencerProfile/>} />
@@ -67,9 +70,10 @@ function App() {
         <Route path="/ad-request/:id" element={<AdRequestPage />} />
         <Route path="/adbooking-request/:id" element={<AdRequestBooking />} />
         <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/Paymentpricing" element={<PaymentPagePlan />} />
         <Route path="/dashboardInfluncer/*" element={<AppLayoutInfluncer  />} />
       </Routes>
-      {location.pathname !== "/login" && !location.pathname.startsWith("/dashboard") && <Footer />}
+      {location.pathname !== "/login" && !location.pathname.startsWith("/dashboard") && !location.pathname.startsWith("/Paymentpricing") &&<Footer />}
       <ToastContainer/>
     </>
   );

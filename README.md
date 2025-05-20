@@ -17,7 +17,7 @@
 ## Project Resources
 
 * **Figma Design:** [BrandBridge UI/UX](https://www.figma.com/design/yXbXYWW98Qsro4LGMPASd1/BrandBridge?node-id=0-1&p=f&t=KgLSYofOUKgd2YPQ-0)
-* **Trello Board:** [BrandBridge Project Board](https://trello.com/b/R6izIQf6/project)
+* **Trello Board:** [BrandBridge Project Board](https://trello.com/b/qHj6tr9R/brandbrige)
 * **Slides:** [Pitch Deck](https://www.canva.com/design/DAGl6Zr78lk/NA0zgoRC5ZC94E59ijIk6g/edit?utm_content=DAGl6Zr78lk&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 * **Documentation:** [Technical Documentation](https://drive.google.com/file/d/1ucrhJGEGH0CIP4YD4itLQrIDod4xrd06/view?usp=sharing)
 * **Project Brief:** [Project Brief](https://drive.google.com/file/d/14CaqoHhpYeqvrvXGONdtwaA1F3pDjCTY/view?usp=sharing)
