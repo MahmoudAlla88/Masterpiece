@@ -94,13 +94,13 @@ exports.scheduleAd = async (req, res) => {
       return res.status(400).json({ message: 'هذا الموعد محجوز مسبقًا' });
     }
 
-    // تحديث الجدولة
+
     request.scheduledDate = scheduledDate;
     request.scheduledTime = scheduledTime;
     request.status = 'scheduled';
     await request.save();
 
-    // تحديث حالة الدفع إن وجدت
+    
     const payment = await Payment.findOne({
       where: {
         referenceId: request.id,
@@ -124,7 +124,7 @@ exports.scheduleAd = async (req, res) => {
 
 
 
-  // عرض جميع طلبات الإعلان
+
 exports.getAllAdRequests = async (req, res) => {
   try {
     const adRequests = await InfluencerAdRequest.findAll();
@@ -135,7 +135,7 @@ exports.getAllAdRequests = async (req, res) => {
   }
 };
 
-// عرض طلبات الإعلان لمؤثر معين
+
 exports.getAdRequestsByInfluencer = async (req, res) => {
   try {
     const { influencerId } = req.params;

@@ -42,7 +42,7 @@ exports.processPayment = async (req, res) => {
   }
 };
 
-
+  
 exports.updateUserSubscription = async (req, res) => {
   const { userId, subscriptionplan, subscriptionexpiry } = req.body;
 

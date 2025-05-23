@@ -9,6 +9,7 @@ import axios from 'axios';
 import OverviewPage from './OverviewPage';
 import PricingPage from '../pages/payment/Pricing';
 import InfluencerProfile from './Profile';
+import InformationPersonality from './information';
 
 
 
@@ -47,8 +48,8 @@ const AppLayoutInfluncer = () => {
           <Route path="/" element={<OverviewPage />} />
            <Route path="/pricing" element={<PricingPage/>} />
                <Route path="/profile/:id" element={<InfluencerProfile/>} />
-          {/* <Route path="/influencers" element={<InfluencersManagement />} />
-          <Route path="/Analytics" element={<Analytics />} />
+          <Route path="/informationPersonality" element={<InformationPersonality />} />
+          {/* <Route path="/Analytics" element={<Analytics />} />
           <Route path="/Subscription" element={<SubscriptionCardForm />} /> */}
         </Routes>
       </div>

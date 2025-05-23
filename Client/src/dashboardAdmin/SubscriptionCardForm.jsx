@@ -278,15 +278,15 @@ const SubscriptionCardForm = () => {
   });
   const [editingPlan, setEditingPlan] = useState(null);
 
-  // جلب الخطط العادية والخطط المحذوفة
+  
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        // جلب الخطط العادية
+      
         const response = await axios.get("http://localhost:4000/api/subscriptions");
         setPlans(response.data);
 
-        // جلب الخطط المحذوفة
+     
         const deletedPlansResponse = await axios.get("http://localhost:4000/api/subscriptions/deleted/all");
         setDeletedPlans(deletedPlansResponse.data);
 
@@ -300,17 +300,17 @@ const SubscriptionCardForm = () => {
     fetchPlans();
   }, []);
 
-  // إضافة أو تحديث خطة
+  
   const handleAddPlan = async (e) => {
     e.preventDefault();
     try {
       if (editingPlan) {
-        // Update existing plan
+       
         const response = await axios.put(`http://localhost:4000/api/subscriptions/${editingPlan.id}`, newPlan);
         const updatedPlan = response.data;
         setPlans(plans.map((plan) => (plan.id === updatedPlan.id ? updatedPlan : plan)));
       } else {
-        // Add new plan
+      
         const response = await axios.post("http://localhost:4000/api/subscriptions", newPlan);
         const addedPlan = response.data;
         setPlans([...plans, addedPlan]);

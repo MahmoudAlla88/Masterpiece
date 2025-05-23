@@ -35,7 +35,7 @@ const redirectByRole = (role,adminApproved) => {
       navigate("/dashboard");
       break;
     case "influencer":
-      if(adminApproved=="approved")
+      if(adminApproved=="approved"||adminApproved=="pendingedit")
       navigate("/dashboardInfluncer");
     else if(adminApproved=="rejected")
         toast.error('Your influencer request has been rejected.');

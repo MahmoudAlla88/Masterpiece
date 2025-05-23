@@ -1,3 +1,339 @@
+
+import React, { useEffect, useState, useMemo } from "react";
+import axios from "axios";
+import {
+  Users,
+  Briefcase,
+  MessageCircle,
+  UserPlus,
+  Calendar,
+} from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+
+
+const AdminDashboard = () => {
+ const [stats, setStats] = useState({
+    influencers: null,
+    campaigns: null,
+    unreadMessages: null,
+    users: null,
+  });
+  const [bookings, setBookings] = useState([]);          // ALL bookings → chart
+  const [recentBookings, setRecentBookings] = useState([]); // last 5 list
+  const [recentInfluencers, setRecentInfluencers] = useState([]);
+  const [timeRange, setTimeRange] = useState(7); // 7 | 30 | 90 days
+  const [loading, setLoading] = useState(true);
+
+  /* ------------------------------------------------------------------ */
+  /*  DATA FETCH                                                        */
+  /* ------------------------------------------------------------------ */
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [infRes, bookingRes, msgRes, userRes] = await Promise.all([
+          axios.get("http://localhost:4000/api/influencer/get"),
+          axios.get("http://localhost:4000/api/users/all", { params: { status: "all" } }),
+          axios.get("http://localhost:4000/api/contact/getmessages", { params: { status: "unread" } }),
+          axios.get("http://localhost:4000/user/users"),
+        ]);
+
+        const influencers = infRes.data.influencers ?? infRes.data;
+        const bookingsArr = bookingRes.data;
+
+        /* helpers */
+        const sortDesc = (a, b) => {
+          if (a.createdAt && b.createdAt) return new Date(b.createdAt) - new Date(a.createdAt);
+          return (b.id ?? 0) - (a.id ?? 0);
+        };
+
+        /* update state */
+        setStats({
+          influencers: influencers.length,
+          campaigns: bookingsArr.length,
+          unreadMessages: msgRes.data.length,
+          users: userRes.data.users.length,
+        });
+        setBookings(bookingsArr);
+        setRecentBookings([...bookingsArr].sort(sortDesc).slice(0, 5));
+        setRecentInfluencers([...influencers].sort(sortDesc).slice(0, 5));
+      } catch (err) {
+        console.error("Failed to load dashboard stats", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  /* ------------------------------------------------------------------ */
+  /*  CHART DATA                                                        */
+  /* ------------------------------------------------------------------ */
+  const chartData = useMemo(() => {
+    // build bucket counts keyed by YYYY‑MM‑DD
+    const now = Date.now();
+    const start = now - timeRange * 24 * 60 * 60 * 1000;
+
+    const buckets = {};
+    bookings.forEach((bk) => {
+      const d = new Date(bk.createdAt ?? bk.requestedDate ?? bk.date);
+      if (d.getTime() >= start) {
+        const key = d.toISOString().slice(0, 10);
+        buckets[key] = (buckets[key] || 0) + 1;
+      }
+    });
+
+    return Object.entries(buckets)
+      .sort(([a], [b]) => new Date(a) - new Date(b))
+      .map(([date, cnt]) => ({ date, cnt }));
+  }, [bookings, timeRange]);
+
+  /* ------------------------------------------------------------------ */
+  /*  DERIVED LOOKUP                                                    */
+  /* ------------------------------------------------------------------ */
+  const influencerNameById = useMemo(() => {
+    const map = new Map();
+    recentInfluencers.forEach((inf) => map.set(inf.id, inf.name));
+    return map;
+  }, [recentInfluencers]);
+
+  /* ------------------------------------------------------------------ */
+  /*  CARD CONFIG                                                       */
+  /* ------------------------------------------------------------------ */
+  const cardConfig = [
+    {
+      id: 1,
+      title: "Total Influencers",
+      value: stats.influencers,
+      icon: <Users size={20} />,
+      color: "from-purple-500 to-purple-700",
+    },
+    {
+      id: 2,
+      title: "Total Campaigns",
+      value: stats.campaigns,
+      icon: <Briefcase size={20} />,
+      color: "from-pink-500 to-pink-700",
+    },
+    {
+      id: 3,
+      title: "Total Messages",
+      value: stats.unreadMessages,
+      icon: <MessageCircle size={20} />,
+      color: "from-purple-400 to-pink-500",
+    },
+    {
+      id: 4,
+      title: "Total Users",
+      value: stats.users,
+      icon: <UserPlus size={20} />,
+      color: "from-indigo-500 to-purple-600",
+    },
+  ];
+
+  /* ------------------------------------------------------------------ */
+  /*  RENDER                                                            */
+  /* ------------------------------------------------------------------ */
+  return (
+    <div className="bg-gray-50 min-h-screen p-6">
+      {/* ------------------------------------------------------------- */}
+      {/* HEADER                                                       */}
+      {/* ------------------------------------------------------------- */}
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Welcome to Dashboard</h1>
+          <p className="text-gray-500">Monitor all influencer and campaign activities</p>
+        </div>
+        <div className="bg-white rounded-lg shadow-sm px-4 py-2 border border-purple-100">
+          <p className="text-sm font-medium text-gray-600">
+            <Calendar size={16} className="inline mr-2 text-purple-500" />
+            {new Date().toLocaleDateString(undefined, {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
+        </div>
+      </div>
+
+      {/* ------------------------------------------------------------- */}
+      {/* CARDS                                                        */}
+      {/* ------------------------------------------------------------- */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {cardConfig.map((card) => (
+          <div key={card.id} className="bg-white rounded-lg shadow-md overflow-hidden border border-purple-100">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <div className={`bg-gradient-to-r ${card.color} w-10 h-10 rounded-lg flex items-center justify-center text-white`}>
+                  {card.icon}
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-800">
+                {loading || card.value === null ? "--" : card.value.toLocaleString()}
+              </h3>
+              <p className="text-gray-500 text-sm mt-1">{card.title}</p>
+            </div>
+            <div className={`h-1 bg-gradient-to-r ${card.color}`}></div>
+          </div>
+        ))}
+      </div>
+
+      {/* ------------------------------------------------------------- */}
+      {/* CHART + TABLES                                               */}
+      {/* ------------------------------------------------------------- */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* --------------------- BOOKINGS CHART --------------------- */}
+        <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6 border border-purple-100">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-semibold text-gray-800">Bookings per Day</h2>
+            <select
+              className="text-sm border border-gray-200 rounded-md px-3 py-1 bg-gray-50 text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-300"
+              value={timeRange}
+              onChange={(e) => setTimeRange(Number(e.target.value))}
+            >
+              <option value={7}>Last 7 days</option>
+              <option value={30}>Last 30 days</option>
+              <option value={90}>Last 90 days</option>
+            </select>
+          </div>
+
+          <div className="h-64">
+            {loading ? (
+              <div className="h-full flex items-center justify-center text-sm text-gray-400">Loading chart…</div>
+            ) : chartData.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-sm text-gray-400">No bookings in selected range.</div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                  <YAxis allowDecimals={false} />
+                  <Tooltip  contentStyle={{ borderRadius: "0.75rem", borderColor: "#d9d6fe" }}
+                labelStyle={{ fontSize: "0.75rem" }}
+                  />
+                  <Bar dataKey="cnt" radius={[4, 4, 0, 0]}
+                   className="fill-purple-500 hover:fill-purple-600 transition-colors" />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </div>
+
+        {/* --------------------- PLACEHOLDER / WIDGET --------------- */}
+        <div className="bg-white rounded-lg shadow-md p-6 border border-purple-100 text-center flex items-center justify-center">
+          <p className="text-gray-500">Add another widget here if needed.</p>
+        </div>
+      </div>
+
+      {/* --------------------- RECENT TABLES ----------------------- */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+        {/* Latest Bookings */}
+        
+
+        {/* Recently Added Influencers */}
+        <div className="bg-white rounded-lg shadow-md p-6 border border-purple-100">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-semibold text-gray-800">Recently Added Influencers</h2>
+            <button className="text-sm text-purple-600 hover:text-purple-800">View All</button>
+          </div>
+
+          {recentInfluencers.length === 0 ? (
+            <p className="text-sm text-gray-500">No influencers found.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-100">
+                    <th className="pb-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Influencer</th>
+                    <th className="pb-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                    <th className="pb-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {recentInfluencers.map((inf) => (
+                    <tr key={inf.id} className="hover:bg-purple-50">
+                      <td className="py-3 pr-6 text-sm font-medium text-gray-800">{inf.name}</td>
+                      <td className="py-3 text-sm text-gray-600">{inf.email ?? "—"}</td>
+                      <td className="py-3 text-sm text-gray-600">
+                        {inf.createdAt ? new Date(inf.createdAt).toLocaleDateString() : "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+        <div className="bg-white rounded-lg shadow-md p-6 border border-purple-100">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-semibold text-gray-800">Latest Bookings</h2>
+            <button className="text-sm text-purple-600 hover:text-purple-800">View All</button>
+          </div>
+
+          {recentBookings.length === 0 ? (
+            <p className="text-sm text-gray-500">No bookings found.</p>
+          ) : (
+            <ul className="divide-y divide-gray-100">
+              {recentBookings.map((bk) => (
+                <li key={bk.id} className="py-4 flex justify-between items-start hover:bg-purple-50 px-2 rounded-md">
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-800">{bk.campaignTitle ?? "Untitled Campaign"}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {bk.createdAt ? new Date(bk.createdAt).toLocaleDateString() : "—"}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-600">
+                      {influencerNameById.get(bk.influencerId) ?? `#${bk.influencerId}`}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+
+
+
+      </div>
+    </div>
+  );
+};
+
+export default AdminDashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // // // import React from 'react';
 // // // import { 
 // // //   Users, 
@@ -699,322 +1035,3 @@
 // };
 
 // export default AdminDashboard;
-import React, { useEffect, useState, useMemo } from "react";
-import axios from "axios";
-import {
-  Users,
-  Briefcase,
-  MessageCircle,
-  UserPlus,
-  Calendar,
-} from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-
-/**
- * Admin dashboard that fetches cards + chart + recent tables.
- * The chart visualises number of bookings per day for a selectable window
- * (last 7 / 30 / 90 days).
- */
-const AdminDashboard = () => {
-  /* ------------------------------------------------------------------ */
-  /*  STATE                                                            */
-  /* ------------------------------------------------------------------ */
-  const [stats, setStats] = useState({
-    influencers: null,
-    campaigns: null,
-    unreadMessages: null,
-    users: null,
-  });
-  const [bookings, setBookings] = useState([]);          // ALL bookings → chart
-  const [recentBookings, setRecentBookings] = useState([]); // last 5 list
-  const [recentInfluencers, setRecentInfluencers] = useState([]);
-  const [timeRange, setTimeRange] = useState(7); // 7 | 30 | 90 days
-  const [loading, setLoading] = useState(true);
-
-  /* ------------------------------------------------------------------ */
-  /*  DATA FETCH                                                        */
-  /* ------------------------------------------------------------------ */
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const [infRes, bookingRes, msgRes, userRes] = await Promise.all([
-          axios.get("http://localhost:4000/api/influencer/get"),
-          axios.get("http://localhost:4000/api/users/all", { params: { status: "all" } }),
-          axios.get("http://localhost:4000/api/contact/getmessages", { params: { status: "unread" } }),
-          axios.get("http://localhost:4000/user/users"),
-        ]);
-
-        const influencers = infRes.data.influencers ?? infRes.data;
-        const bookingsArr = bookingRes.data;
-
-        /* helpers */
-        const sortDesc = (a, b) => {
-          if (a.createdAt && b.createdAt) return new Date(b.createdAt) - new Date(a.createdAt);
-          return (b.id ?? 0) - (a.id ?? 0);
-        };
-
-        /* update state */
-        setStats({
-          influencers: influencers.length,
-          campaigns: bookingsArr.length,
-          unreadMessages: msgRes.data.length,
-          users: userRes.data.users.length,
-        });
-        setBookings(bookingsArr);
-        setRecentBookings([...bookingsArr].sort(sortDesc).slice(0, 5));
-        setRecentInfluencers([...influencers].sort(sortDesc).slice(0, 5));
-      } catch (err) {
-        console.error("Failed to load dashboard stats", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStats();
-  }, []);
-
-  /* ------------------------------------------------------------------ */
-  /*  CHART DATA                                                        */
-  /* ------------------------------------------------------------------ */
-  const chartData = useMemo(() => {
-    // build bucket counts keyed by YYYY‑MM‑DD
-    const now = Date.now();
-    const start = now - timeRange * 24 * 60 * 60 * 1000;
-
-    const buckets = {};
-    bookings.forEach((bk) => {
-      const d = new Date(bk.createdAt ?? bk.requestedDate ?? bk.date);
-      if (d.getTime() >= start) {
-        const key = d.toISOString().slice(0, 10);
-        buckets[key] = (buckets[key] || 0) + 1;
-      }
-    });
-
-    return Object.entries(buckets)
-      .sort(([a], [b]) => new Date(a) - new Date(b))
-      .map(([date, cnt]) => ({ date, cnt }));
-  }, [bookings, timeRange]);
-
-  /* ------------------------------------------------------------------ */
-  /*  DERIVED LOOKUP                                                    */
-  /* ------------------------------------------------------------------ */
-  const influencerNameById = useMemo(() => {
-    const map = new Map();
-    recentInfluencers.forEach((inf) => map.set(inf.id, inf.name));
-    return map;
-  }, [recentInfluencers]);
-
-  /* ------------------------------------------------------------------ */
-  /*  CARD CONFIG                                                       */
-  /* ------------------------------------------------------------------ */
-  const cardConfig = [
-    {
-      id: 1,
-      title: "Total Influencers",
-      value: stats.influencers,
-      icon: <Users size={20} />,
-      color: "from-purple-500 to-purple-700",
-    },
-    {
-      id: 2,
-      title: "Total Campaigns",
-      value: stats.campaigns,
-      icon: <Briefcase size={20} />,
-      color: "from-pink-500 to-pink-700",
-    },
-    {
-      id: 3,
-      title: "Total Messages",
-      value: stats.unreadMessages,
-      icon: <MessageCircle size={20} />,
-      color: "from-purple-400 to-pink-500",
-    },
-    {
-      id: 4,
-      title: "Total Users",
-      value: stats.users,
-      icon: <UserPlus size={20} />,
-      color: "from-indigo-500 to-purple-600",
-    },
-  ];
-
-  /* ------------------------------------------------------------------ */
-  /*  RENDER                                                            */
-  /* ------------------------------------------------------------------ */
-  return (
-    <div className="bg-gray-50 min-h-screen p-6">
-      {/* ------------------------------------------------------------- */}
-      {/* HEADER                                                       */}
-      {/* ------------------------------------------------------------- */}
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Welcome to Dashboard</h1>
-          <p className="text-gray-500">Monitor all influencer and campaign activities</p>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm px-4 py-2 border border-purple-100">
-          <p className="text-sm font-medium text-gray-600">
-            <Calendar size={16} className="inline mr-2 text-purple-500" />
-            {new Date().toLocaleDateString(undefined, {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
-        </div>
-      </div>
-
-      {/* ------------------------------------------------------------- */}
-      {/* CARDS                                                        */}
-      {/* ------------------------------------------------------------- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {cardConfig.map((card) => (
-          <div key={card.id} className="bg-white rounded-lg shadow-md overflow-hidden border border-purple-100">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <div className={`bg-gradient-to-r ${card.color} w-10 h-10 rounded-lg flex items-center justify-center text-white`}>
-                  {card.icon}
-                </div>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-800">
-                {loading || card.value === null ? "--" : card.value.toLocaleString()}
-              </h3>
-              <p className="text-gray-500 text-sm mt-1">{card.title}</p>
-            </div>
-            <div className={`h-1 bg-gradient-to-r ${card.color}`}></div>
-          </div>
-        ))}
-      </div>
-
-      {/* ------------------------------------------------------------- */}
-      {/* CHART + TABLES                                               */}
-      {/* ------------------------------------------------------------- */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* --------------------- BOOKINGS CHART --------------------- */}
-        <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6 border border-purple-100">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-gray-800">Bookings per Day</h2>
-            <select
-              className="text-sm border border-gray-200 rounded-md px-3 py-1 bg-gray-50 text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-300"
-              value={timeRange}
-              onChange={(e) => setTimeRange(Number(e.target.value))}
-            >
-              <option value={7}>Last 7 days</option>
-              <option value={30}>Last 30 days</option>
-              <option value={90}>Last 90 days</option>
-            </select>
-          </div>
-
-          <div className="h-64">
-            {loading ? (
-              <div className="h-full flex items-center justify-center text-sm text-gray-400">Loading chart…</div>
-            ) : chartData.length === 0 ? (
-              <div className="h-full flex items-center justify-center text-sm text-gray-400">No bookings in selected range.</div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                  <YAxis allowDecimals={false} />
-                  <Tooltip  contentStyle={{ borderRadius: "0.75rem", borderColor: "#d9d6fe" }}
-                labelStyle={{ fontSize: "0.75rem" }}
-                  />
-                  <Bar dataKey="cnt" radius={[4, 4, 0, 0]}
-                   className="fill-purple-500 hover:fill-purple-600 transition-colors" />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-        </div>
-
-        {/* --------------------- PLACEHOLDER / WIDGET --------------- */}
-        <div className="bg-white rounded-lg shadow-md p-6 border border-purple-100 text-center flex items-center justify-center">
-          <p className="text-gray-500">Add another widget here if needed.</p>
-        </div>
-      </div>
-
-      {/* --------------------- RECENT TABLES ----------------------- */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-        {/* Latest Bookings */}
-        
-
-        {/* Recently Added Influencers */}
-        <div className="bg-white rounded-lg shadow-md p-6 border border-purple-100">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-gray-800">Recently Added Influencers</h2>
-            <button className="text-sm text-purple-600 hover:text-purple-800">View All</button>
-          </div>
-
-          {recentInfluencers.length === 0 ? (
-            <p className="text-sm text-gray-500">No influencers found.</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="pb-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Influencer</th>
-                    <th className="pb-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th className="pb-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {recentInfluencers.map((inf) => (
-                    <tr key={inf.id} className="hover:bg-purple-50">
-                      <td className="py-3 pr-6 text-sm font-medium text-gray-800">{inf.name}</td>
-                      <td className="py-3 text-sm text-gray-600">{inf.email ?? "—"}</td>
-                      <td className="py-3 text-sm text-gray-600">
-                        {inf.createdAt ? new Date(inf.createdAt).toLocaleDateString() : "—"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-        <div className="bg-white rounded-lg shadow-md p-6 border border-purple-100">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-gray-800">Latest Bookings</h2>
-            <button className="text-sm text-purple-600 hover:text-purple-800">View All</button>
-          </div>
-
-          {recentBookings.length === 0 ? (
-            <p className="text-sm text-gray-500">No bookings found.</p>
-          ) : (
-            <ul className="divide-y divide-gray-100">
-              {recentBookings.map((bk) => (
-                <li key={bk.id} className="py-4 flex justify-between items-start hover:bg-purple-50 px-2 rounded-md">
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-800">{bk.campaignTitle ?? "Untitled Campaign"}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {bk.createdAt ? new Date(bk.createdAt).toLocaleDateString() : "—"}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-600">
-                      {influencerNameById.get(bk.influencerId) ?? `#${bk.influencerId}`}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-
-
-
-      </div>
-    </div>
-  );
-};
-
-export default AdminDashboard;

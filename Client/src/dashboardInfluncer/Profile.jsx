@@ -8,7 +8,7 @@ import { X, PlusCircle, Instagram, Facebook, Twitter, Youtube, Linkedin } from '
 const InfluencerProfile = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
   const { id } = useParams();
-
+const [influencerId, setInfluencerId] = useState(null);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,27 +18,27 @@ const InfluencerProfile = () => {
   const [form, setForm] = useState({
     bio: '',
     stats: {
-      followers: '',
-      engagement: '',
-      reach: ''
+     avgLikes: '',
+    followers: '', 
+     engagementRate: '',
+      totalPosts:'',
     },
-    socialLinks: {
-      instagram: '',
-      facebook: '',
-      twitter: '',
-      youtube: '',
-      tiktok: '',
-      linkedin: ''
-    },
+   socialLinks: {
+    instagram: { url: '', followers: '' },
+    facebook:  { url: '', followers: '' },
+    twitter:   { url: '', followers: '' },
+    youtube:   { url: '', followers: '' },
+    tiktok:    { url: '', followers: '' },
+   
+  },
     contentCategories: [],
     audienceDemo: {
-      age: '',
-      gender: '',
-      location: '',
-      interests: ''
+   gender: '',
+  ageGroups: '',
+  topLocations: ''
     },
     previousCampaigns: [],
-    primarySocialMedia: '',
+   
     advertisingcost: ''
   });
 
@@ -46,7 +46,12 @@ const InfluencerProfile = () => {
   const [newCampaign, setNewCampaign] = useState({ name: '', brand: '', date: '' });
   const [profileImage, setProfileImage] = useState(null);
   const [coverImage, setCoverImage] = useState(null);
-
+const prepareSocialLinksArray = (socialLinks) =>
+  Object.entries(socialLinks).map(([platform, { url, followers }]) => ({
+    platform,
+    url,
+    followers
+  }));
   // تحميل البيانات
   useEffect(() => {
     const fetchData = async () => {
@@ -54,31 +59,58 @@ const InfluencerProfile = () => {
         setLoading(true);
         const res = await axios.get(`http://localhost:4000/api/influencer/user/${id}`);
         setData(res.data);
-
+        console.log(res.data);
+          const defaultSocial = {
+        instagram: { url: '', followers: '' },
+        facebook:  { url: '', followers: '' },
+        twitter:   { url: '', followers: '' },
+        youtube:   { url: '', followers: '' },
+        tiktok:    { url: '', followers: '' },
+        linkedin:  { url: '', followers: '' }
+      };
+ const raw = res.data.socialLinks;
+      let incoming = [];
+      if (typeof raw === 'string') {
+       try { incoming = JSON.parse(raw); } catch { incoming = []; }
+     } else if (Array.isArray(raw)) {
+        incoming = raw;
+      } else if (typeof raw === 'object' && raw !== null) {
+        incoming = prepareSocialLinksArray(raw);
+      }
+      const social = { ...defaultSocial };
+      incoming.forEach(({ platform, url, followers }) => {
+        if (social[platform]) {
+          social[platform] = { url: url || '', followers: followers || '' };
+        }
+      });
+      // 2. ادمج الـ defaults مع البيانات
+      // const social = { ...defaultSocial };
+      // res.data.socialLinks.forEach(({ platform, url, followers }) => {
+      //   if (social[platform]) {
+      //     social[platform] = {
+      //       url: url || '',
+      //       followers: followers || ''
+      //     };
+      //   }
+      // });
+  setInfluencerId(res.data.id); 
         setForm({
           bio: res.data.bio || '',
           stats: {
             followers: res.data.stats?.followers || '',
-            engagement: res.data.stats?.engagement || '',
-            reach: res.data.stats?.reach || '',
+            engagementRate: res.data.stats?.engagementRate || '',
+           avgLikes: res.data.stats?.avgLikes || '',
+           totalPosts:res.data.stats?.totalPosts || ''
           },
-          socialLinks: {
-            instagram: res.data.socialLinks?.instagram || '',
-            facebook: res.data.socialLinks?.facebook || '',
-            twitter: res.data.socialLinks?.twitter || '',
-            youtube: res.data.socialLinks?.youtube || '',
-            tiktok: res.data.socialLinks?.tiktok || '',
-            linkedin: res.data.socialLinks?.linkedin || ''
-          },
+         socialLinks: social,
           contentCategories: res.data.contentCategories || [],
           audienceDemo: {
-            age: res.data.audienceDemo?.age || '',
-            gender: res.data.audienceDemo?.gender || '',
-            location: res.data.audienceDemo?.location || '',
-            interests: res.data.audienceDemo?.interests || ''
+           gender: res.data.audienceDemo?.gender || '',
+           ageGroups: res.data.audienceDemo?.ageGroups || '',
+            topLocations: res.data.audienceDemo?.topLocations || '',     
           },
           previousCampaigns: res.data.previousCampaigns || [],
-          primarySocialMedia: res.data.primarySocialMedia || '',
+          
           advertisingcost: res.data.advertisingcost || ''
         });
       } catch (err) {
@@ -151,7 +183,18 @@ const InfluencerProfile = () => {
     if (type === 'profile') setProfileImage(e.target.files[0]);
     else if (type === 'cover') setCoverImage(e.target.files[0]);
   };
-
+const handleSocialChange = (platform, field, value) => {
+  setForm(prev => ({
+    ...prev,
+    socialLinks: {
+      ...prev.socialLinks,
+      [platform]: {
+        ...prev.socialLinks[platform],
+        [field]: value
+      }
+    }
+  }));
+};
   // الإرسال
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -162,17 +205,19 @@ const InfluencerProfile = () => {
       const formData = new FormData();
       formData.append('bio', form.bio);
       formData.append('stats', JSON.stringify(form.stats));
-      formData.append('socialLinks', JSON.stringify(form.socialLinks));
-      formData.append('contentCategories', JSON.stringify(form.contentCategories));
+      formData.append('socialLinks', JSON.stringify(
+        prepareSocialLinksArray(form.socialLinks)
+      ));  
+         formData.append('contentCategories', JSON.stringify(form.contentCategories));
       formData.append('audienceDemo', JSON.stringify(form.audienceDemo));
       formData.append('previousCampaigns', JSON.stringify(form.previousCampaigns));
-      formData.append('primarySocialMedia', form.primarySocialMedia);
+     
       formData.append('advertisingcost', form.advertisingcost);
 
       if (profileImage) formData.append('profileImage', profileImage);
       if (coverImage) formData.append('coverImage', coverImage);
 
-      const res = await axios.put(`http://localhost:4000/api/influencer/update/${id}`, formData, {
+      const res = await axios.put(`http://localhost:4000/api/influencer/update/${influencerId}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
@@ -216,7 +261,7 @@ const InfluencerProfile = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {['followers', 'engagement', 'reach'].map(stat => (
+          {['followers', 'engagementRate', 'avgLikes','totalPosts', ].map(stat => (
             <div key={stat}>
               <label className="block font-semibold mb-2 capitalize text-gray-700">{stat.replace(/([A-Z])/g, ' $1')}</label>
               <input
@@ -230,35 +275,90 @@ const InfluencerProfile = () => {
           ))}
         </div>
 
-        {/* Social Links */}
+    
         <div>
-          <h3 className="text-xl font-semibold mb-4 text-gray-800">Social Links</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.entries(form.socialLinks).map(([platform, url]) => {
-              const Icon = {
-                instagram: Instagram,
-                facebook: Facebook,
-                twitter: Twitter,
-                youtube: Youtube,
-                tiktok: () => <div className="mr-2 text-purple-500 text-xl">📱</div>,
-                linkedin: Linkedin
-              }[platform];
-              return (
-                <div key={platform} className="flex items-center" >
-                  <Icon className="mr-2 text-purple-500" size={20} />
-                  <input
-                    type="text"
-                    value={url}
-                    onChange={(e) => handleNestedChange('socialLinks', platform, e.target.value)}
-                    className="flex-1 border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    placeholder={`${platform.charAt(0).toUpperCase() + platform.slice(1)} URL`}
-                  />
-                </div>
-              );
-            })}
+  <h3 className="text-xl font-semibold mb-4">Social Links</h3>
+  <div className="space-y-4">
+    {Object.entries(form.socialLinks).map(([platform, { url, followers }]) => {
+      const Icon = {
+        instagram: Instagram,
+        facebook:  Facebook,
+        twitter:   Twitter,
+        youtube:   Youtube,
+        tiktok:    () => <div className="mr-2 text-purple-500">📱</div>,
+        linkedin:  Linkedin
+      }[platform];
+
+      return (
+        <div
+          key={platform}
+          className="flex items-center space-x-4"
+        >
+          <Icon size={20} className="text-purple-500" />
+
+          {/* URL */}
+          <input
+            type="text"
+            value={url}
+            onChange={e => handleSocialChange(platform, 'url', e.target.value)}
+            placeholder={`${platform} URL`}
+            className="flex-1 border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+          />
+
+          {/* Followers */}
+          <input
+            type="text"
+            value={followers}
+            onChange={e => handleSocialChange(platform, 'followers', e.target.value)}
+            placeholder="Followers e.g. 300k"
+            className="w-32 border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+          />
+        </div>
+      );
+    })}
+  </div>
+</div>
+
+{/* <div>
+  <h3 className="text-xl font-semibold mb-4">Social Links</h3>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {Object.entries(form.socialLinks).map(([platform, { url, followers }]) => {
+      const Icon = {
+        instagram: Instagram,
+        facebook:  Facebook,
+        twitter:   Twitter,
+        youtube:   Youtube,
+        tiktok:    () => <div className="mr-2 text-purple-500">📱</div>,
+        linkedin:  Linkedin
+      }[platform];
+
+      return (
+        <div key={platform} className="space-y-2">
+          <div className="flex items-center">
+            <Icon className="mr-2 text-purple-500" size={20} />
+            <input
+              type="text"
+              value={url}
+              onChange={e => handleSocialChange(platform, 'url', e.target.value)}
+              placeholder={`${platform} URL`}
+              className="flex-1 border px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
+          <div className="flex items-center">
+            <span className="mr-2">Likes/Followers:</span>
+            <input
+              type="text"
+              value={followers}
+              onChange={e => handleSocialChange(platform, 'followers', e.target.value)}
+              placeholder={`e.g. 300k`}
+              className="flex-1 border px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+            />
           </div>
         </div>
-
+      );
+    })}
+  </div>
+</div> */}
         {/* Content Categories */}
         <div>
           <h3 className="text-xl font-semibold mb-4 text-gray-800">Content Categories</h3>
@@ -369,22 +469,7 @@ const InfluencerProfile = () => {
 
         {/* Primary Social Media and Advertising Cost */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block font-semibold mb-2 text-gray-700">Primary Social Media</label>
-            <select
-              value={form.primarySocialMedia}
-              onChange={(e) => handleChange('primarySocialMedia', e.target.value)}
-              className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
-            >
-              <option value="">Select Platform</option>
-              <option value="Instagram">Instagram</option>
-              <option value="TikTok">TikTok</option>
-              <option value="YouTube">YouTube</option>
-              <option value="Twitter">Twitter</option>
-              <option value="Facebook">Facebook</option>
-              <option value="LinkedIn">LinkedIn</option>
-            </select>
-          </div>
+        
           <div>
             <label className="block font-semibold mb-2 text-gray-700">Advertising Cost (USD)</label>
             <input

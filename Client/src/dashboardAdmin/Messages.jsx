@@ -12,7 +12,8 @@ const Messages = () => {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [viewMode, setViewMode] = useState('table'); // 'table' or 'card'
 
-  
+   const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
   useEffect(() => {
     const fetchMessages = async () => {
       try {
@@ -82,6 +83,21 @@ const Messages = () => {
            msg.name?.toLowerCase().includes(filter.toLowerCase()) ||
            msg.email?.toLowerCase().includes(filter.toLowerCase());
   }) : [];
+ const filtered = messages.filter((msg) =>
+    msg.message?.toLowerCase().includes(filter.toLowerCase()) ||
+    msg.name?.toLowerCase().includes(filter.toLowerCase()) ||
+    msg.email?.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const start = (currentPage - 1) * itemsPerPage;
+  const currentMessages = filtered.slice(start, start + itemsPerPage);
+
+  const changePage = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
 
   if (loading) {
     return (
@@ -179,7 +195,7 @@ const Messages = () => {
       {/* Table View */}
       {viewMode === 'table' && (
         <div className="bg-white rounded-lg shadow-md overflow-hidden border border-purple-100 mb-8">
-          {filteredMessages.length > 0 ? (
+          {currentMessages.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -193,7 +209,7 @@ const Messages = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredMessages.map((msg, index) => (
+                  {currentMessages.map((msg, index) => (
                     <React.Fragment key={msg.contact_id}>
                       <tr className={`${msg.read ? "" : "bg-purple-50"} hover:bg-gray-50`}>
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -305,8 +321,8 @@ const Messages = () => {
       {/* Card View */}
       {viewMode === 'card' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {filteredMessages.length > 0 ? (
-            filteredMessages.map((msg) => (
+          {currentMessages.length > 0 ? (
+            currentMessages.map((msg) => (
               <div
                 key={msg.contact_id}
                 className="bg-white rounded-lg shadow-md border border-purple-100 hover:shadow-lg transition-all duration-200"
@@ -423,6 +439,19 @@ const Messages = () => {
             </div>
           )}
         </div>
+      )}
+         {filtered.length > itemsPerPage && (
+        <div className="mt-6 flex justify-center">
+            <button onClick={() => changePage(currentPage-1)} disabled={currentPage===1}    className="px-4 py-2 bg-purple-600 text-white rounded-l-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-purple-700"
+            >Previous</button>
+            {/* {Array.from({ length: totalPages }, (_, i) => i+1).map(num => (
+              <button key={num} onClick={() => changePage(num)} className={`px-3 py-1 border rounded ${currentPage===num ? 'bg-purple-600 text-white' : ''}`}>{num}</button>
+            ))} */}
+             <span className="px-4 py-2 bg-white border-t border-b border-gray-300">
+            Page {currentPage} of {totalPages}
+          </span>
+            <button onClick={() => changePage(currentPage+1)} disabled={currentPage===totalPages}               className="px-4 py-2 bg-purple-600 text-white rounded-r-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-purple-700">Next</button>
+          </div>
       )}
     </div>
   );

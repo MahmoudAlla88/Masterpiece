@@ -133,9 +133,9 @@ const closeAll = () => {
                     <li className="px-4 py-2 hover:bg-gray-100">
                       <Link to="/profile">Profile</Link>
                     </li>
-                    <li className="px-4 py-2 hover:bg-gray-100">
+                    {/* <li className="px-4 py-2 hover:bg-gray-100">
                       <Link to="/userbookings">My Campaigns</Link>
-                    </li>
+                    </li> */}
                     <li className="border-t my-2" />
                     <li
                       onClick={handleLogout}
@@ -249,13 +249,13 @@ const closeAll = () => {
               >
                 Profile
               </Link>
-              <Link
+              {/* <Link
                 to="/bookings"
                 className="block py-2 text-gray-700"
                 onClick={() => setMobileOpen(false)}
               >
                 My Campaigns
-              </Link>
+              </Link> */}
               <button
                 onClick={() => {
                   handleLogout();

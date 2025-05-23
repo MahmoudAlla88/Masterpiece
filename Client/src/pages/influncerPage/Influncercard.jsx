@@ -8,7 +8,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -133,7 +133,7 @@ console.log(receivedInfluencers)
     };
 
     fetchInfluencers();
-  }, [searchTerm, selectedCategories]);
+  }, []);
 
   useEffect(() => {
     let results = influencers;
@@ -414,6 +414,7 @@ const [currentPage, setCurrentPage] = useState(1);
 
               {/* Filter Toggle Button */}
               <button
+               type="button"  
                 onClick={toggleFilters}
                 className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50"
               >
@@ -435,8 +436,158 @@ const [currentPage, setCurrentPage] = useState(1);
 }
             </div>
           </div>
+{showBrandForm && (
+  <div className="bg-gradient-to-br from-slate-50 to-gray-100 p-6 rounded-2xl shadow-xl border border-slate-200/50 max-w-2xl mx-auto mb-10">
+    <form onSubmit={handleSubmitBrand} className="space-y-6">
+      {/* Header Section */}
+      <div className="text-center pb-6 border-b border-slate-200">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+        </div>
+        <h2 className="text-2xl font-semibold text-slate-800 mb-2">Brand Information</h2>
+        <p className="text-slate-600">Tell us about your brand to find the perfect influencers</p>
+      </div>
 
-          {showBrandForm && (
+      {/* Form Fields */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Brand Name */}
+        <div className="md:col-span-2">
+          <label className="block text-slate-700 font-medium mb-2 text-sm tracking-wide">
+            Brand Name
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              name="brandName"
+              value={brandData.brandName}
+              onChange={handleBrandChange}
+              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white/70 backdrop-blur-sm"
+              placeholder="Enter your brand name"
+              required
+            />
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Brand Description */}
+        <div className="md:col-span-2">
+          <label className="block text-slate-700 font-medium mb-2 text-sm tracking-wide">
+            Brand Description
+          </label>
+          <textarea
+            name="brandDescription"
+            value={brandData.brandDescription}
+            onChange={handleBrandChange}
+            rows={4}
+            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white/70 backdrop-blur-sm resize-none"
+            placeholder="Describe your brand, target audience, and campaign goals..."
+            required
+          />
+        </div>
+
+        {/* Price Range */}
+        <div>
+          <label className="block text-slate-700 font-medium mb-2 text-sm tracking-wide">
+            Minimum Budget (USD)
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span className="text-slate-500 text-sm">$</span>
+            </div>
+            <input
+              type="number"
+              step="0.01"
+              name="minAdPrice"
+              value={brandData.minAdPrice}
+              onChange={handleBrandChange}
+              className="w-full pl-8 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white/70 backdrop-blur-sm"
+              placeholder="0.00"
+              required
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-slate-700 font-medium mb-2 text-sm tracking-wide">
+            Maximum Budget (USD)
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span className="text-slate-500 text-sm">$</span>
+            </div>
+            <input
+              type="number"
+              step="0.01"
+              name="maxAdPrice"
+              value={brandData.maxAdPrice}
+              onChange={handleBrandChange}
+              className="w-full pl-8 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white/70 backdrop-blur-sm"
+              placeholder="0.00"
+              required
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Submit Button */}
+      <div className="pt-6 border-t border-slate-200">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-medium py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg hover:shadow-xl"
+        >
+          <div className="flex items-center justify-center space-x-2">
+            {isSubmitting ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Finding Influencers...</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span>Find Perfect Influencers</span>
+              </>
+            )}
+          </div>
+        </button>
+      </div>
+
+      {/* Message Display */}
+      {message && (
+        <div className={`p-4 rounded-xl border ${
+          message.includes('Failed') || message.includes('Error')
+            ? 'bg-red-50 border-red-200 text-red-700'
+            : 'bg-green-50 border-green-200 text-green-700'
+        }`}>
+          <div className="flex items-center space-x-2">
+            {message.includes('Failed') || message.includes('Error') ? (
+              <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+            )}
+            <span className="font-medium">{message}</span>
+          </div>
+        </div>
+      )}
+    </form>
+  </div>
+)}
+          {/* {showBrandForm && (
   <form
     onSubmit={handleSubmitBrand}
     className="bg-white shadow-lg rounded-xl p-6 max-w-xl mx-auto mb-10"
@@ -478,7 +629,7 @@ const [currentPage, setCurrentPage] = useState(1);
     />
   </div>
 
-  {/* Maximum Ad Price */}
+ 
   <div className="mb-4">
     <label className="block text-gray-700 font-medium mb-1">Maximum Ad Price (USD)</label>
     <input
@@ -502,7 +653,8 @@ const [currentPage, setCurrentPage] = useState(1);
       <p className="mt-4 text-sm text-gray-700">{message}</p>
     )}
   </form>
-)}
+)} 
+*/}
 
           {/* Filter Options */}
           {filtersOpen && (
@@ -514,6 +666,7 @@ const [currentPage, setCurrentPage] = useState(1);
                 <div className="flex flex-wrap gap-2">
                   {availableCategories.map((category) => (
                     <button
+                    type="button"
                       key={category}
                       onClick={() => toggleCategory(category)}
                       className={`py-1 px-3 rounded-full text-sm font-medium transition-colors
@@ -530,6 +683,7 @@ const [currentPage, setCurrentPage] = useState(1);
               </div>
               <div className="flex justify-end">
                 <button
+                type="button"
                   onClick={clearFilters}
                   className="text-sm text-gray-600 hover:text-purple-600"
                 >

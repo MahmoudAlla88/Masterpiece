@@ -4,11 +4,11 @@ const jwt = require('jsonwebtoken');
 // const User = require('../models/User');
 // const InfluencerRegistration = require('../models/InfluencerRegistration');
 const { User, InfluencerRegistration }=require("../models")
-const upload = require('../utils/multer'); // تأكد من إعداد multer في هذا الملف
+const upload = require('../utils/multer'); 
 const { Op } = require('sequelize');
 exports.registerInfluencer = async (req, res) => {
   try {
-    // استخدام multer للتعامل مع رفع الصور: profileImage و coverImage
+    
     upload.fields([
       { name: 'profileImage', maxCount: 1 },
       { name: 'coverImage', maxCount: 1 }
@@ -17,7 +17,7 @@ exports.registerInfluencer = async (req, res) => {
         return res.status(400).json({ message: err.message });
       }
       
-      // استخراج الحقول من req.body
+     
       const {
         name,
         email,
@@ -91,25 +91,25 @@ exports.registerInfluencer = async (req, res) => {
         });
       }
       
-      
+      0
       const newInfluencer = await InfluencerRegistration.create({
         userId: user.id,
         bio,
         profileImage: profileImgPath,
-        coverImage: coverImgPath, // قد يكون null إذا لم يتم رفع صورة غلاف
+        coverImage: coverImgPath,
         stats: parsedStats,
         socialLinks: parsedSocialLinks,
         contentCategories: parsedContentCategories,
         audienceDemo: parsedAudienceDemo,
         previousCampaigns: parsedPreviousCampaigns,
-        primarySocialMedia, // قد يُرسل من العميل أو يمكنك حسابه
+        primarySocialMedia, 
         advertisingcost
       });
       
-      // تحديث دور المستخدم إلى "influencer"
+      
       await user.update({ role: 'influencer' });
       
-      // إنشاء توكن JWT
+      
       const token = jwt.sign(
         { userId: user.id, email: user.email },
         process.env.JWT_SECRET || 'your_secret_key',
@@ -167,7 +167,7 @@ exports.getInfluencerById = async (req, res) => {
                   attributes: ['name', 'email', 'location', 'phone']
               }
           ]
-      }); n
+      }); 
 console.log(influencer)
       if (!influencer) {
           return res.status(404).json({ message: "Influencer not found" });
@@ -327,12 +327,12 @@ exports.updateInfluencer = async (req, res) => {
         contentCategories,
         audienceDemo,
         previousCampaigns,
-        primarySocialMedia,
+
         advertisingcost,
         
       } = req.body;
 
-      // تحويل الحقول المركبة (JSON.parse) كما في create
+      
       let parsedStats, parsedSocialLinks, parsedContentCategories, parsedAudienceDemo, parsedPreviousCampaigns;
       try {
         parsedStats = typeof stats === 'string' ? JSON.parse(stats) : stats;
@@ -378,7 +378,7 @@ exports.updateInfluencer = async (req, res) => {
         contentCategories: parsedContentCategories,
         audienceDemo: parsedAudienceDemo,
         previousCampaigns: parsedPreviousCampaigns,
-        primarySocialMedia,
+     
         advertisingcost
       });
 const user = await User.findByPk(influencer.userId);

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { Navigate, useLocation ,useNavigate } from "react-router-dom";
 import axios from 'axios';  
-import {  toast } from 'react-toastify'; 
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+
 import { useSelector } from 'react-redux';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 export default function PaymentPage() {
@@ -91,14 +93,8 @@ const handleSubmit = async (method, extra = {}) => {
       console.log(payload);
       await axios.post('http://localhost:4000/api/users/request-ad', payload);
   
-            toast.success("Payment successful! Returning to previous page.", {
-          autoClose: 3000,
-            closeOnClick: true,
-  closeButton: true,
-         
-         
-        });
-     setTimeout(() => navigate(-1), 3000);
+            toast.success("Payment successful! Returning to previous page.");
+     setTimeout(() => navigate("/InfluencersPage"), 3000);
 
         // setPaymentData(null);
     setCardName('');
@@ -125,6 +121,18 @@ const priceToPay = preview.discountApplied
   ? preview.finalPrice
   : preview.originalPrice;
   return (
+    <>
+          <ToastContainer 
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-lg shadow-xl overflow-hidden">
@@ -411,6 +419,6 @@ const priceToPay = preview.discountApplied
           </button>
         </div>
       </div>
-    </div>
+    </div></>
   );
 }

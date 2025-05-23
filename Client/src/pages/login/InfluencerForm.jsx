@@ -54,7 +54,7 @@ export default function InfluencerRegistrationForm() {
     previousCampaigns: [
       { brand: "", description: "", date: "" }
     ],
-    AdvertisingCost:"",
+    advertisingcost:"",
   });
 
   const availableCategories = [
@@ -173,7 +173,7 @@ export default function InfluencerRegistrationForm() {
         return true;
       }
       case 3: {
-        const { stats, socialLinks,AdvertisingCost } = formData;
+        const { stats, socialLinks,advertisingcost } = formData;
         const { followers, engagementRate, totalPosts, avgLikes } = stats;
         if (!followers || !engagementRate || !totalPosts || !avgLikes) {
           toast.error("Please fill in all account statistics fields.");
@@ -184,8 +184,8 @@ export default function InfluencerRegistrationForm() {
           toast.error("Please fill in the URL for at least one social media platform.");
           return false;
         }
-        if (!AdvertisingCost) {
-          toast.error("Please fill in the URL for at least one AdvertisingCost platform.");
+        if (!advertisingcost) {
+          toast.error("Please fill in the URL for at least one advertisingcost platform.");
           return false;
         }
         return true;
@@ -234,7 +234,7 @@ export default function InfluencerRegistrationForm() {
     dataToSubmit.append('location', formData.location);
     dataToSubmit.append('password', formData.password);
     dataToSubmit.append('bio', formData.bio);
-    dataToSubmit.append('AdvertisingCost', formData.AdvertisingCost);
+    dataToSubmit.append('advertisingcost', formData.advertisingcost);
     if (selectedProfileFile) {
       dataToSubmit.append('profileImage', selectedProfileFile);
     } else {
@@ -538,12 +538,12 @@ export default function InfluencerRegistrationForm() {
             />
           </div>
           <div>
-            <label htmlFor="AdvertisingCost" className="block text-sm font-medium text-gray-700 mb-1">AdvertisingCost</label>
+            <label htmlFor="advertisingcost" className="block text-sm font-medium text-gray-700 mb-1">Advertisingcost</label>
             <input
               type="number"
-              id="AdvertisingCost"
-              name="AdvertisingCost"
-              value={formData.AdvertisingCost }
+              id="advertisingcost"
+              name="advertisingcost"
+              value={formData.advertisingcost }
               onChange={handleInputChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="300 JD"
@@ -730,9 +730,9 @@ export default function InfluencerRegistrationForm() {
         <button
           type="button"
           className="px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
-          onClick={() => window.location.href = '/Pricing'}
+          onClick={() => window.location.href = '/login'}
         >
-          Go to Pricing
+          Go to login
         </button>
       </div>
     </div>

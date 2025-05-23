@@ -10,9 +10,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 export default function AdRequestBooking() {
   const location = useLocation();
-  
+  console.log(location.state)
   const influencerPrice = parseFloat(location.state?.influencerPrice || 0);
- const influncerName=location.state?.influncerName;
+ const influncerName=location.state?.influencerName;
  console.log(influncerName);
   console.log("influencerPrice",influencerPrice);
   const { id } = useParams(); 
@@ -51,6 +51,10 @@ export default function AdRequestBooking() {
 
     fetchBookedSlots();
   }, [id]);
+   const isSameDay = (d1, d2) =>
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth()    === d2.getMonth() &&
+    d1.getDate()     === d2.getDate();
 const getExcludedTimes = (bookedSlots) => {
     const excludedTimes = [];
 
@@ -221,7 +225,14 @@ const getExcludedTimes = (bookedSlots) => {
         onChange={(date) => setRequestedDate(date)}  // تحديث التاريخ عند تغييره
         showTimeSelect
         minDate={new Date()}  // منع اختيار تواريخ ماضية
-        excludeTimes={getExcludedTimes(bookedSlots)}  // استبعاد الأوقات بين start و end
+        // excludeTimes={getExcludedTimes(bookedSlots)}  // استبعاد الأوقات بين start و end
+       filterTime={(time) =>                         // ✔️ أضفت هذا
+    !bookedSlots.some(slot =>
+      isSameDay(time, slot.start) &&            // زِمِن نفس اليوم
+     time.getTime() >= slot.start.getTime() && // داخل المدة المحجوزة
+      time.getTime() <= slot.end.getTime()
+    )
+  }
         dateFormat="Pp"  // تنسيق عرض التاريخ والوقت
         placeholderText="Select a date and time"  // النص الافتراضي في الـ input
         required

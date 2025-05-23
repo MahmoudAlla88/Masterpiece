@@ -64,7 +64,10 @@ exports.sendInfluencersAndBrand = async (req, res) => {
     console.log("requestBody=", requestBody);
 
     
-    const response = await axios.post('http://136.243.72.107:8000/choose-influencer', requestBody);
+   const response = await axios.post(
+  process.env.REACT_APP_LOCALHOST_AI,
+  requestBody
+);
 
     console.log("response.data=", response.data);
 

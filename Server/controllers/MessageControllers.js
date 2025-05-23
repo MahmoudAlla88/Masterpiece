@@ -44,7 +44,7 @@ const getMessages = async (req, res) => {
   };
   const getMessagesByReadStatus = async (req, res) => {
     try {
-      const { status } = req.query;  // 'read' أو 'unread'
+      const { status } = req.query;  
       let readStatus = null;
   
       if (status === "read") {
@@ -53,7 +53,7 @@ const getMessages = async (req, res) => {
         readStatus = false;
       }
   
-      // جلب الرسائل بناءً على حالة القراءة
+      
       const messages = await ContactMessage.findAll({
         where: readStatus !== null ? { read: readStatus } : {},
       });
@@ -117,13 +117,13 @@ const getMessages = async (req, res) => {
     }
   
     try {
-      // 1. جلب الرسالة الأصليّة
+    
       const msg = await ContactMessage.findByPk(messageId);
       if (!msg) {
         return res.status(404).json({ message: 'الرسالة غير موجودة' });
       }
   console.log(msg)
-      // 2. إرسال البريد
+      
       const mailOpts = {
         from: `"${process.env.EMAIL_USER}" <${process.env.EMAIL_USER}>`,
         to: msg.email,                          // بريد صاحب الرسالة
@@ -134,7 +134,7 @@ const getMessages = async (req, res) => {
   
       await transporter.sendMail(mailOpts);
   
-      // 3. تحديث السجل في قاعدة البيانات (مثال: إضافة حقل replyText و repliedAt)
+   
       await msg.update({ replyText, repliedAt: new Date() });
   
       res.json({ success: true, message: 'Reply sent and saved.' });

@@ -33,7 +33,7 @@ const InfluencerSidebar = () => {
   
     { id: 'profile', icon: <Users size={20} />, label: 'Profile' },
      { id: 'pricing', icon: <Image size={20} />, label: 'Subscription' },
-
+ { id: 'informationPersonality', icon: <Image size={20} />, label: 'informationPersonality' },
   ];
 
   const toggleSidebar = () => {

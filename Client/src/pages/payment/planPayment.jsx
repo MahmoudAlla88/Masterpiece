@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
 import { useSelector } from "react-redux";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import axios from "axios";
@@ -110,6 +111,18 @@ const handleSubmit = async (method, extra = {}) => {
 };
 
   return (
+    <>
+          <ToastContainer 
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-lg shadow-xl overflow-hidden">
@@ -235,6 +248,6 @@ const handleSubmit = async (method, extra = {}) => {
           </div>
         </div>
       </div>
-    </div>
+    </div></>
   );
 }
